@@ -4,8 +4,9 @@ import openai
 from flask import Flask, redirect, render_template, request, url_for
 
 app = Flask(__name__)
-openai.api_key = os.getenv("OPENAI_API_KEY")
-
+openai.api_key = "Dd77ClpEzlMvbFJ2mp0b35-mPXwtlG6FEuBXDIsTssnV3sCr11vCS0XHO8K2Wrou-86DNHQ0L0oo5h1iuDb5j6Q"
+openai.api_base = "https://api.openai.iniad.org/api/v1"
+print(openai.api_key)
 
 @app.route("/", methods=("GET", "POST"))
 def index():
