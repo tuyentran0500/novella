@@ -1,10 +1,17 @@
 import React from 'react';
-import {TextField} from '@mui/material';
+import {Button, TextField} from '@mui/material';
 export const Home: React.FC<{}> = () => {
     return (
-        <div>
-            <TextField id="outlined-search" label="Search field" type="search" />
+        <div className='flex flex-col h-full'>
+            <div className="flex p-2">
+                <TextField className="grow" id="outlined-search" label="Content" type="search" />
+                <Button>Submit</Button>
+            </div>
+            <div className='grow'>
+                
+            </div>
         </div>
+
     )
 }
 export default Home
