@@ -4,26 +4,44 @@ import openai
 from flask_cors import CORS
 
 from flask import Flask, request
+from pymongo import MongoClient
 
 app = Flask(__name__)
 cors = CORS(app)
+client = MongoClient('mongodb://localhost:27017/')
+db = client['novella']
 openai.api_key = "Dd77ClpEzlMvbFJ2mp0b35-mPXwtlG6FEuBXDIsTssnV3sCr11vCS0XHO8K2Wrou-86DNHQ0L0oo5h1iuDb5j6Q"
 openai.api_base = "https://api.openai.iniad.org/api/v1"
 
-@app.route("/chat", methods=("GET", "POST"))
-def index():
-    if (request.method == 'POST'):
-        data = request.get_json()
-        content = data['content']
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                    {"role": "system", "content": "You are a helpful assistant."},
-                    {"role": "user", "content": content},
-                ]
-            )
-        print(response)
-        return {"content": response.choices[0].message.content}, 200
+def getChatHistoryById(id = ""):
+    chatCollection = db['chat']
+    if (id == ''):
+        return chatCollection.find_one()['memory']
+    else:
+        return chatCollection.find({"_id": id})['memory']
+    
+@app.route("/chat", methods=["GET"])
+def getChatHistory(id = ""):
+    result = getChatHistoryById(id)
+    print("Document:", result)
+    return {"memory": result}, 200
+
+
+@app.route("/chat", methods=["POST"])
+def getChatResponse():
+    data = request.get_json()
+    content = data['content']
+    messages = getChatHistoryById(id = '')
+    messages.append({"role": "user", "content": content})
+    print(messages)
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=messages
+        )
+    messages.append({"content": response.choices[0].message.content, "role" : "assistant"})
+    db['chat'].update_one({}, { "$set": { "memory": messages } })
+
+    return {"content": response.choices[0].message.content, "role" : "assistant"}, 200
 
 
 def generate_prompt(animal):
