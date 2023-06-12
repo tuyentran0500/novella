@@ -1,26 +1,29 @@
 import os
 
 import openai
-from flask import Flask, redirect, render_template, request, url_for
+from flask_cors import CORS
+
+from flask import Flask, request
 
 app = Flask(__name__)
+cors = CORS(app)
 openai.api_key = "Dd77ClpEzlMvbFJ2mp0b35-mPXwtlG6FEuBXDIsTssnV3sCr11vCS0XHO8K2Wrou-86DNHQ0L0oo5h1iuDb5j6Q"
 openai.api_base = "https://api.openai.iniad.org/api/v1"
-print(openai.api_key)
 
-@app.route("/", methods=("GET", "POST"))
+@app.route("/chat", methods=("GET", "POST"))
 def index():
-    if request.method == "POST":
-        animal = request.form["animal"]
-        response = openai.Completion.create(
-            model="text-davinci-003",
-            prompt=generate_prompt(animal),
-            temperature=0.6,
-        )
-        return redirect(url_for("index", result=response.choices[0].text))
-
-    result = request.args.get("result")
-    return render_template("index.html", result=result)
+    if (request.method == 'POST'):
+        data = request.get_json()
+        content = data['content']
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                    {"role": "system", "content": "You are a helpful assistant."},
+                    {"role": "user", "content": content},
+                ]
+            )
+        print(response)
+        return {"content": response.choices[0].message.content}, 200
 
 
 def generate_prompt(animal):
