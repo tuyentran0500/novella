@@ -16,7 +16,7 @@ const Header = () : JSX.Element => {
                         color: 'white',
                     }}
                 >
-                    NOVELA
+                    Novella
                 </Typography>
                 </Toolbar>
             </Container>

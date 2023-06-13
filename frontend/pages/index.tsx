@@ -6,13 +6,13 @@ export const Home: React.FC<{}> = () => {
     return (
         <div className='flex h-full p-2'>
             <Link href="/chat/">
-                <Button className="w-48 bg-blue-400 hover:bg-blue-600 text-white h-48 m-2">
+                <Button className="w-48 bg-green-600 hover:bg-green-700 text-white h-48 m-2">
                     Chat
                 </Button>
             </Link>
             <Link href="/story/">
-                <Button className="w-48 bg-blue-400 hover:bg-blue-600 text-white h-48 m-2">
-                    Create a story
+                <Button className="w-48 bg-green-600 hover:bg-green-700 text-white h-48 m-2">
+                    My stories
                 </Button>
             </Link>
         </div>
