@@ -1,26 +1,47 @@
 import os
 
 import openai
-from flask import Flask, redirect, render_template, request, url_for
+from flask_cors import CORS
+
+from flask import Flask, request
+from pymongo import MongoClient
 
 app = Flask(__name__)
-openai.api_key = "Dd77ClpEzlMvbFJ2mp0b35-mPXwtlG6FEuBXDIsTssnV3sCr11vCS0XHO8K2Wrou-86DNHQ0L0oo5h1iuDb5j6Q"
-openai.api_base = "https://api.openai.iniad.org/api/v1"
-print(openai.api_key)
+cors = CORS(app)
+client = MongoClient('mongodb://localhost:27017/')
+db = client['novella']
+openai.api_key = os.getenv('NOVELLA_API_KEY')
+openai.api_base = os.getenv('NOVELLA_API_BASE')
 
-@app.route("/", methods=("GET", "POST"))
-def index():
-    if request.method == "POST":
-        animal = request.form["animal"]
-        response = openai.Completion.create(
-            model="text-davinci-003",
-            prompt=generate_prompt(animal),
-            temperature=0.6,
+def getChatHistoryById(id = ""):
+    chatCollection = db['chat']
+    if (id == ''):
+        return chatCollection.find_one()['memory']
+    else:
+        return chatCollection.find({"_id": id})['memory']
+    
+@app.route("/chat", methods=["GET"])
+def getChatHistory(id = ""):
+    result = getChatHistoryById(id)
+    print("Document:", result)
+    return {"memory": result}, 200
+
+
+@app.route("/chat", methods=["POST"])
+def getChatResponse():
+    data = request.get_json()
+    content = data['content']
+    messages = getChatHistoryById(id = '')
+    messages.append({"role": "user", "content": content})
+    print(messages)
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=messages
         )
-        return redirect(url_for("index", result=response.choices[0].text))
+    messages.append({"content": response.choices[0].message.content, "role" : "assistant"})
+    db['chat'].update_one({}, { "$set": { "memory": messages } })
 
-    result = request.args.get("result")
-    return render_template("index.html", result=result)
+    return {"content": response.choices[0].message.content, "role" : "assistant"}, 200
 
 
 def generate_prompt(animal):
