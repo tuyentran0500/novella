@@ -10,8 +10,8 @@ app = Flask(__name__)
 cors = CORS(app)
 client = MongoClient('mongodb://localhost:27017/')
 db = client['novella']
-openai.api_key = "Dd77ClpEzlMvbFJ2mp0b35-mPXwtlG6FEuBXDIsTssnV3sCr11vCS0XHO8K2Wrou-86DNHQ0L0oo5h1iuDb5j6Q"
-openai.api_base = "https://api.openai.iniad.org/api/v1"
+openai.api_key = os.getenv('NOVELLA_API_KEY')
+openai.api_base = os.getenv('NOVELLA_API_BASE')
 
 def getChatHistoryById(id = ""):
     chatCollection = db['chat']
