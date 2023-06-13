@@ -1,6 +1,5 @@
 import React from 'react';
-import {Button, TextField} from '@mui/material';
-import ChatBox from '@/components/Chat/ChatBox';
+import {Button} from '@mui/material';
 import Link from 'next/link';
 export const Home: React.FC<{}> = () => {
     return (
