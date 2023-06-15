@@ -1,14 +1,16 @@
 import { ChatResponse } from '@/api/models/chat'
+import { ChatProvider } from '@/context/Chat'
 import { Box, Typography } from '@mui/material'
 import React from 'react'
 interface ChatContentProps {
     chatContentList : ChatResponse[]
 }
 const tailwindColorClasses = {
-    user: "w-full px-2 py-4 bg-zinc-600 text-white",
-    assistant: 'w-full px-2 py-4 bg-zinc-500 text-white',
+    user: "w-full px-8 py-8 bg-zinc-600 text-white",
+    assistant: 'w-full px-8 py-8 bg-zinc-500 text-white',
     system: 'd-none',
   }
+
 const ChatContent = ({chatContentList} : ChatContentProps) : JSX.Element => {
     return (
         <div className='flex flex-col bg-zinc-500 overflow-y-auto h-full pb-24'>
