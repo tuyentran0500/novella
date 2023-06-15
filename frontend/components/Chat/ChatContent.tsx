@@ -1,7 +1,8 @@
 import { ChatResponse } from '@/api/models/chat'
-import { ChatProvider } from '@/context/Chat'
+import { ChatProvider, useChatContext } from '@/context/Chat'
 import { Box, Typography } from '@mui/material'
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
+import LoadingChat from './LoadingChat'
 interface ChatContentProps {
     chatContentList : ChatResponse[]
 }
@@ -12,6 +13,13 @@ const tailwindColorClasses = {
   }
 
 const ChatContent = ({chatContentList} : ChatContentProps) : JSX.Element => {
+    const { fetchChatContentStatus: status} = useChatContext();
+    const bottomChatRef = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        bottomChatRef.current?.scrollIntoView({ behavior: 'smooth'});
+        console.log("Here")
+    }, [status, chatContentList])
+    
     return (
         <div className='flex flex-col bg-zinc-500 overflow-y-auto h-full pb-24'>
             {
@@ -21,6 +29,10 @@ const ChatContent = ({chatContentList} : ChatContentProps) : JSX.Element => {
                     </Box>
                 ))
             }
+            {status == 'loading' && 
+                    <LoadingChat />
+            }
+            <div ref = {bottomChatRef}/>
         </div>
     )
 }

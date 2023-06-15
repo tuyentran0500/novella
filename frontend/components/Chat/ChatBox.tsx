@@ -21,12 +21,11 @@ const ChatBox = (): JSX.Element => {
             content: ""
         }
     })
-    const {chatContentList, fetchChatResponse: handleChatPrompt, fetchChatContentStatus: status} = useChatContext();
+    const {chatContentList, fetchChatResponse: handleChatPrompt} = useChatContext();
     
     return (
         <div className='flex flex-col'>
             <ChatContent chatContentList={chatContentList}/>
-            {status == 'loading' && <LoadingChat/>}
             <AppBar position="fixed" className="bg-inherit" sx={{ top: 'auto', bottom: 0 }}>
                 <form onSubmit={handleSubmit(handleChatPrompt)}>
                     <div className="flex p-2">
