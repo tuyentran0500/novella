@@ -15,7 +15,7 @@ const ChatContent = ({chatContentList} : ChatContentProps) : JSX.Element => {
             {
                 chatContentList.filter(prompt => prompt.role != 'system').map((prompt, id) => (
                     <Box key = {id} className={tailwindColorClasses[prompt.role]}>
-                        <Typography>{prompt.content}</Typography>
+                        <Typography style={{whiteSpace: 'pre-wrap'}}>{prompt.content}</Typography>
                     </Box>
                 ))
             }
