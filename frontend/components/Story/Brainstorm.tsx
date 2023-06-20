@@ -1,21 +1,23 @@
-import { ChatResponse } from '@/api/models/chat';
-import { getBrainstormResponse } from '@/api/story';
-import { Button, Checkbox, FormControl, InputLabel, ListItemText, MenuItem, OutlinedInput, Select, SelectChangeEvent } from '@mui/material'
-import React, { useState } from 'react'
+import { Button, Checkbox, FormControl, InputLabel, ListItemText, MenuItem, OutlinedInput, Select, SelectChangeEvent, Slider } from '@mui/material'
+import React from 'react'
 import { useForm } from 'react-hook-form';
 import ChatContent from '../Chat/ChatContent';
-const names = [
-    'Drama',
-    'Fantasy',
-    'Mystery',
-    'Romance',
-    'Sci-fi',
-  ];
-  
+import { StoryProvider, useStoryContext } from '@/context/Brainstorm';
+import { ChatPrompt } from '@/interfaces/Chat';
+import TemperatureSlider from './TemperatureSlider';
+
+export const BrainstormPage: React.FC<{}> = () => {
+    return (
+      <StoryProvider>
+        <Brainstorm/>
+      </StoryProvider>
+    )
+}
+
 const Brainstorm = (): JSX.Element => {
-    const [chatContentList, setChatContentList] = useState<ChatResponse[]>([]);
+    const {chatContentList, confirmBrainstorm, handleChatPrompt, genres: names} = useStoryContext();
     const [personName, setPersonName] = React.useState<string[]>([]);
-    const { handleSubmit, register } = useForm<ChatResponse>();
+    const { handleSubmit, register } = useForm<ChatPrompt>();
   
     const handleChange = (event: SelectChangeEvent<typeof personName>) => {
       const {
@@ -27,44 +29,38 @@ const Brainstorm = (): JSX.Element => {
       );
     };
 
-    const handleChatPrompt = async (data: ChatResponse): Promise<void> => {
-        console.log(data);
-        const result = await getBrainstormResponse(data);
-        if (result != null){
-            setChatContentList(prevState => [...prevState, result]);
-            console.log(result);
-        }
-    }
-  
     return (
         <div>
             <div className='flex align-middle'>
-                <FormControl sx={{ m: 1, width: 300 }}>
-                <InputLabel id="demo-multiple-checkbox-label">Tag</InputLabel>
-                <Select
-                    labelId="demo-multiple-checkbox-label"
-                    id="demo-multiple-checkbox"
-                    multiple
-                    value={personName}
-                    input={<OutlinedInput label="Tag" />}
-                    renderValue={(selected) => selected.join(', ')}
-                    {...register('content', {
-                    onChange: handleChange
-                    })}
-                >
-                    {names.map((name) => (
-                    <MenuItem key={name} value={name}>
-                        <Checkbox checked={personName.indexOf(name) > -1} />
-                        <ListItemText primary={name} />
-                    </MenuItem>
-                    ))}
-                </Select>
+                <FormControl sx={{ m: 1, width: 400 }}>
+                  <InputLabel id="demo-multiple-checkbox-label">Tag</InputLabel>
+                  <Select
+                      labelId="demo-multiple-checkbox-label"
+                      id="demo-multiple-checkbox"
+                      multiple
+                      value={personName}
+                      input={<OutlinedInput label="Tag" />}
+                      renderValue={(selected) => selected.join(', ')}
+                      {...register('content', {
+                      onChange: handleChange
+                      })}
+                  >
+                      {names.map((name : string) => (
+                      <MenuItem key={name} value={name}>
+                          <Checkbox checked={personName.indexOf(name) > -1} />
+                          <ListItemText primary={name} />
+                      </MenuItem>
+                      ))}
+                  </Select>
+                  <TemperatureSlider />
                 </FormControl>
-                <Button className='bg-green-500 hover:bg-green-600 text-white' onClick={handleSubmit(handleChatPrompt)}>Submit</Button>
+                <Button className='bg-green-500 hover:bg-green-600 text-white h-12' onClick={handleSubmit(handleChatPrompt)}>Submit</Button>
+
             </div>
             <ChatContent chatContentList={chatContentList}></ChatContent>
+            <Button className='bg-green-500 hover:bg-green-600 text-white' onClick={confirmBrainstorm}>Confirm</Button>
         </div>
 
     );
   }
-export default Brainstorm
+export default BrainstormPage

@@ -6,7 +6,7 @@ import ChatContent from "./ChatContent"
 import { ChatResponse } from "@/api/models/chat"
 import GrayTextField from "../Common/GrayTextField"
 import { ChatProvider, useChatContext } from "@/context/Chat"
-import LoadingChat from "./LoadingChat"
+
 export const Chat: React.FC<{}> = () => {
     return (
         <ChatProvider>

@@ -6,6 +6,8 @@ import StepButton from '@mui/material/StepButton';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Brainstorm from './Brainstorm';
+import StoryOutline from './StoryOutline';
+import { StoryProvider } from '@/context/Brainstorm';
 
 const steps = ['Brainstorm', 'Research', 'Outline Story', "Writing", "Feedback"];
 
@@ -86,7 +88,11 @@ const StoryStepper = (): JSX.Element => {
         ) : (
           <div className='flex flex-col h-full'>
             <div className='grow'>
+              <StoryProvider>
                 {activeStep == 0 && <Brainstorm/>}
+                {activeStep == 2 && <StoryOutline/>}
+              </StoryProvider>
+
             </div>
             <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
               <Button

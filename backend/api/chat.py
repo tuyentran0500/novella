@@ -4,8 +4,8 @@ from flask import Blueprint, request
 import os
 import openai
 from pymongo import MongoClient
-client = MongoClient('mongodb://localhost:27017/')
 chat_bp = Blueprint('chat', __name__)
+client = MongoClient('mongodb://localhost:27017/')
 db = client['novella']
 
 openai.api_key = os.getenv('NOVELLA_API_KEY')

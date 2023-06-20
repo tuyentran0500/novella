@@ -1,7 +1,7 @@
 import { getChatHistory, getChatResponse } from '@/api/chat';
 import { FetchStatusType } from '@/api/models/status';
 import { ChatPrompt } from '@/interfaces/Chat';
-import React, {Children, useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 
 interface ChatContext {
     chatContentList: ChatPrompt[]
