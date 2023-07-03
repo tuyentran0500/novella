@@ -2,17 +2,10 @@ import { Button, Checkbox, FormControl, InputLabel, ListItemText, MenuItem, Outl
 import React from 'react'
 import { useForm } from 'react-hook-form';
 import ChatContent from '../Chat/ChatContent';
-import { StoryProvider, useStoryContext } from '@/context/Brainstorm';
+import { useStoryContext } from '@/context/Story';
 import { ChatPrompt } from '@/interfaces/Chat';
 import TemperatureSlider from './TemperatureSlider';
 
-export const BrainstormPage: React.FC<{}> = () => {
-    return (
-      <StoryProvider>
-        <Brainstorm/>
-      </StoryProvider>
-    )
-}
 
 const Brainstorm = (): JSX.Element => {
     const {chatContentList, confirmBrainstorm, handleChatPrompt, genres: names} = useStoryContext();
@@ -63,4 +56,4 @@ const Brainstorm = (): JSX.Element => {
 
     );
   }
-export default BrainstormPage
+export default Brainstorm

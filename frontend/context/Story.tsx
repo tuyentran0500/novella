@@ -1,18 +1,23 @@
 import { ChatResponse } from '@/api/models/chat';
 import { FetchStatusType } from '@/api/models/status';
-import { confirmBrainstormResponse, getBrainstormHistory, getBrainstormResponse, getStoryOutline } from '@/api/story';
+import { confirmBrainstormResponse, createChapter, getBrainstormHistory, getBrainstormResponse, getStoryOutline, saveChapterContent } from '@/api/story';
 import { ChatPrompt } from '@/interfaces/Chat';
-import { ChapterContent } from '@/interfaces/Story';
+import { ChapterContent, defaultChapterContent } from '@/interfaces/Story';
 import React, {useContext, useEffect, useState} from 'react';
 
 interface StoryContext {
     chatContentList: ChatPrompt[]
     storyOutlineList: ChapterContent[]
+    selectedChapter: ChapterContent,
+    genres: string[],
     fetchStoryOutlineStatus: FetchStatusType,
     fetchChatContentStatus: FetchStatusType,
+    fetchSelectedChapterStatus: FetchStatusType,
     handleChatPrompt: (data: ChatPrompt) => Promise<void>;
     confirmBrainstorm: () => Promise<void>,
-    genres: string[],
+    generateChapterContent: () => Promise<void>,
+    saveCurrentChapterContent: () => Promise<void>,
+    handleWritingChapter: (data: ChapterContent) => Promise<void>,
 }
 const defaultGenres = [
     'Drama',
@@ -24,11 +29,16 @@ const defaultGenres = [
 const initialState: StoryContext = {
     chatContentList: [],
     storyOutlineList: [],
+    selectedChapter: defaultChapterContent,
+    genres: defaultGenres,
     fetchStoryOutlineStatus: 'idle',
     fetchChatContentStatus: 'idle',
+    fetchSelectedChapterStatus: 'idle',
     handleChatPrompt: async (data: ChatPrompt) => {},
     confirmBrainstorm: async () => {},
-    genres: defaultGenres,
+    generateChapterContent: async () => {},
+    handleWritingChapter: async (data: ChapterContent) => {},
+    saveCurrentChapterContent: async () => {},
 }
 
 const Context = React.createContext<StoryContext>(initialState);
@@ -42,8 +52,15 @@ export const StoryProvider: React.FC<StoryProviderProps> = ({children}) => {
     const [storyOutlineList, setStoryOutlineList] = useState<ChapterContent[]>([]);
     const [fetchChatContentStatus, setFetchChatContentStatus] = useState<FetchStatusType>('idle');
     const [fetchStoryOutlineStatus, setFetchStoryOutlineStatus] = useState<FetchStatusType>('idle');
+    const [selectedChapter, setSelectedChapter] = useState<ChapterContent>(defaultChapterContent);
+    const [fetchSelectedChapterStatus, setFetchSelectedChapterStatus] = useState<FetchStatusType>('idle');
 
     const genres = defaultGenres;
+    const handleWritingChapter = async (data: ChapterContent) => {
+        setFetchSelectedChapterStatus('loading');
+        setSelectedChapter(data);
+        setFetchSelectedChapterStatus('succeeded');
+    }
     const handleChatPrompt = async (data: ChatResponse): Promise<void> => {
         console.log(data);
         setFetchChatContentStatus('loading');
@@ -71,6 +88,30 @@ export const StoryProvider: React.FC<StoryProviderProps> = ({children}) => {
             setFetchStoryOutlineStatus('errored');
         }
     }
+
+    const generateChapterContent = async () => {
+        setFetchSelectedChapterStatus('loading');
+        const result = await createChapter(selectedChapter);
+        if (result != null){
+            setSelectedChapter(result);
+            setFetchSelectedChapterStatus('succeeded');
+        }
+        else {
+            setFetchSelectedChapterStatus('errored');
+        }
+    }
+    const saveCurrentChapterContent = async () => {
+        setFetchSelectedChapterStatus('loading');
+        const result = await saveChapterContent(selectedChapter);
+        if (result != null){
+            // setSelectedChapter(result);
+            setFetchSelectedChapterStatus('succeeded');
+        }
+        else {
+            setFetchSelectedChapterStatus('errored');
+        }
+        
+    }
     useEffect(() => {
         void (async () => {
             if (fetchChatContentStatus == 'idle'){
@@ -90,10 +131,15 @@ export const StoryProvider: React.FC<StoryProviderProps> = ({children}) => {
             value = {{
                 chatContentList,
                 storyOutlineList,
+                selectedChapter,
                 fetchStoryOutlineStatus,
                 fetchChatContentStatus,
+                fetchSelectedChapterStatus,
                 handleChatPrompt,
                 confirmBrainstorm,
+                handleWritingChapter,
+                generateChapterContent,
+                saveCurrentChapterContent,
                 genres,
             }}
         >

@@ -35,29 +35,82 @@ def brainstorming():
 def confirmBrainstormIdea():
     data = request.get_json()
     content = data['content']
+    outlineList = getOutlineStoryList(summary=content)
     storyCollection.update_one({}, {
         "$set": {
-            "summary" : content
+            "summary" : content,
+            "chapters" : outlineList,
         }
     })
     
     return {"content": "Succeed!", "role" : "system"}, 200
 
-@story_bp.route('/outline', methods=['GET'])
-def outline():
-    summary = storyCollection.find_one({})['summary']
+def getOutlineStoryList(summary):
     content = "With the following idea:" + summary + "\n"
     content += "Suggest an outline in the following format: ``` [ { \"title\" : \"\", \"description\": \"\"]```"
     messages = [{"role": "user", "content": content}]
-    print(messages)
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=messages
     )
     response = response.choices[0].message.content
     response = response.split("```")
-    print(response)
     outlineList = response[0].strip()
     outlineList = json.loads(outlineList)
-
+    return outlineList
+@story_bp.route('/outline', methods=['GET'])
+def getOutline():
+    outlineList = storyCollection.find_one({})['chapters']
     return {"content": outlineList, "role" : "system"}, 200
+
+@story_bp.route('/writing', methods=['POST'])
+def chapterWriting():
+    summary = storyCollection.find_one({})['summary']
+    data = request.get_json()
+    content = "Write an chapter based on the following description and the summary above: "
+    content += data['title'] + " " + data['description']
+    content += ". Also, do not include the title of the chapter"
+
+    messages = [
+        {"role": "user", "content": summary},
+        {"role": "user", "content": content}
+    ]
+    print(messages)
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=messages
+    )
+    data["content"] = response.choices[0].message.content
+    return data, 200
+
+def rewriteChapterDescription(data):
+    content = data['content']
+    content = "Rewrite this chapter description based on the content: " + content + "."
+    content += "Also, write this within 3 setences and do not include the chapter title" 
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role" : "system", "content" : "You are an helpful assistant"},
+            {"role": "user", "content": content}
+        ]
+    )
+    data['description'] = response.choices[0].message.content
+    return data
+
+@story_bp.route('/save-chapter', methods=['POST'])
+def saveChapter():
+    data = request.get_json()
+    chapters = storyCollection.find_one({})['chapters']
+    data = rewriteChapterDescription(data)
+    print(data)
+    chapters[data['index']] = data
+    storyCollection.update_one({}, {
+        "$set": {
+            "chapters" : chapters,
+        }
+    })
+    return {"content": chapters, "role" : "system"}, 200
+    
+
+
+    
