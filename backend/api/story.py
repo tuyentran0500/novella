@@ -63,10 +63,17 @@ def getOutline():
     outlineList = storyCollection.find_one({})['chapters']
     return {"content": outlineList, "role" : "system"}, 200
 
+def getStoryProgress(chapterIndex):
+    chapters = storyCollection.find_one({})['chapters']
+    summary = ""
+    for index in range(0, chapterIndex):
+        summary += chapters[index]['description']
+    return summary
+
 @story_bp.route('/writing', methods=['POST'])
 def chapterWriting():
-    summary = storyCollection.find_one({})['summary']
     data = request.get_json()
+    summary = getStoryProgress(data['index'])
     content = "Write an chapter based on the following description and the summary above: "
     content += data['title'] + " " + data['description']
     content += ". Also, do not include the title of the chapter"

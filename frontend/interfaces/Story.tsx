@@ -3,6 +3,7 @@ export interface ChapterContent {
     description: string,
     index?: number,
     content?: string,
+    contentBlock?: string,
 }
 
 export const defaultChapterContent: ChapterContent = {

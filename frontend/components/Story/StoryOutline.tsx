@@ -9,7 +9,7 @@ const StoryOutline = (): JSX.Element => {
     <div className="m-5 flex flex-col overflow-y-auto h-screen">
             {storyOutlineList.map((story : ChapterContent, key) => (
                 // <div key={key}>{story.title} {story.description}</div>
-                <ChapterOutlineCard key= {key} title = {story.title} description={story.description} content={story.content} index={key}/>
+                <ChapterOutlineCard key= {key} title = {story.title} description={story.description} content={story.content} index={key} contentBlock = {story.contentBlock}/>
             ))}
         </div>
     )

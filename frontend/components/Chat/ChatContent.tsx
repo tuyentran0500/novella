@@ -17,7 +17,6 @@ const ChatContent = ({chatContentList} : ChatContentProps) : JSX.Element => {
     const bottomChatRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
         bottomChatRef.current?.scrollIntoView({ behavior: 'smooth'});
-        console.log("Here")
     }, [status, chatContentList])
     
     return (
