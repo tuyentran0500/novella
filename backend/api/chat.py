@@ -1,11 +1,11 @@
 
 from flask import Blueprint, request
+
 import os
 import openai
 from pymongo import MongoClient
-
-client = MongoClient('mongodb://localhost:27017/')
 chat_bp = Blueprint('chat', __name__)
+client = MongoClient('mongodb://localhost:27017/')
 db = client['novella']
 
 openai.api_key = os.getenv('NOVELLA_API_KEY')
@@ -18,18 +18,14 @@ def getChatHistoryById(id = ""):
     else:
         return chatCollection.find({"_id": id})['memory']
     
-@chat_bp.route("/", methods=["GET"])
-def getChatHistory(id = ""):
-    result = getChatHistoryById(id)
-    print("Document:", result)
-    return {"memory": result}, 200
 
-
-@chat_bp.route("/", methods=["POST"])
+@chat_bp.route("", methods=("GET", "POST"))
 def getChatResponse():
+    messages = getChatHistoryById(id = '')
+    if request.method == 'GET':
+        return {"memory": messages}, 200
     data = request.get_json()
     content = data['content']
-    messages = getChatHistoryById(id = '')
     messages.append({"role": "user", "content": content})
     print(messages)
     response = openai.ChatCompletion.create(

@@ -5,7 +5,15 @@ import { useForm } from "react-hook-form"
 import ChatContent from "./ChatContent"
 import { ChatResponse } from "@/api/models/chat"
 import GrayTextField from "../Common/GrayTextField"
+import { ChatProvider, useChatContext } from "@/context/Chat"
 
+export const Chat: React.FC<{}> = () => {
+    return (
+        <ChatProvider>
+            <ChatBox />
+        </ChatProvider>
+    )
+}
 const ChatBox = (): JSX.Element => {
     const { handleSubmit, register } = useForm<ChatResponse>({
         defaultValues: {
@@ -13,29 +21,15 @@ const ChatBox = (): JSX.Element => {
             content: ""
         }
     })
-    const [chatContentList, setChatContentList] = useState<ChatResponse[]>([]);
-    useEffect(() => {
-        void (async () => {
-            const result = await getChatHistory();
-            setChatContentList(result);
-        })()
-    }, [])
+    const {chatContentList, fetchChatResponse: handleChatPrompt} = useChatContext();
     
-    const handleChatPrompt = async (data: ChatResponse): Promise<void> => {
-        setChatContentList(prevState => [...prevState, data])
-        const result = await getChatResponse(data);
-        if (result != null){
-            setChatContentList(prevState => [...prevState, result])
-        }
-        console.log(chatContentList);
-    }
     return (
         <div className='flex flex-col'>
             <ChatContent chatContentList={chatContentList}/>
             <AppBar position="fixed" className="bg-inherit" sx={{ top: 'auto', bottom: 0 }}>
                 <form onSubmit={handleSubmit(handleChatPrompt)}>
                     <div className="flex p-2">
-                        <GrayTextField className="grow bg-zinc-600 mr-2" id="outlined-search" label="Content" type="search" {...register('content')} focused/>
+                        <GrayTextField className="grow bg-zinc-600 mr-2" id="outlined-search" sx={{ input: { color: 'white' } }} label="Content" type="search" {...register('content')} focused/>
                         <Button className="bg-green-500 hover:bg-green-600 text-white">Submit</Button>
                     </div>
                 </form>
@@ -44,4 +38,4 @@ const ChatBox = (): JSX.Element => {
         </div>
     )
 }
-export default ChatBox
+export default Chat

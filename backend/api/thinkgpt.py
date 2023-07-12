@@ -5,7 +5,7 @@ import os
 
 thinkgpt_bp = Blueprint('thinkgpt', __name__)
 
-@thinkgpt_bp.route('/', methods=['GET'])
+@thinkgpt_bp.route('', methods=['GET'])
 def thinkgptBasic():
     llm = ThinkGPT(model_name="gpt-3.5-turbo")
 
