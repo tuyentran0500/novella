@@ -3,6 +3,8 @@ import os
 import openai
 from pymongo import MongoClient
 import json
+import requests
+import base64
 
 openai.api_key = os.getenv('NOVELLA_API_KEY')
 openai.api_base = os.getenv('NOVELLA_API_BASE')
@@ -69,7 +71,43 @@ def getStoryProgress(chapterIndex):
     for index in range(0, chapterIndex):
         summary += chapters[index]['description']
     return summary
-
+def getContentBlock(data):
+    return str([
+            {
+                "id": "title",
+                "type": "heading",
+                "props": {
+                    "textColor": "default",
+                    "backgroundColor": "default",
+                    "textAlignment": "left",
+                    "level": "3"
+                },
+                "content": [
+                    {
+                        "type": "text",
+                        "text": data["title"],
+                        "styles": {}
+                    }
+                ],
+            },
+            {
+                "id": "content",
+                "type": "paragraph",
+                "props": {
+                    "textColor": "default",
+                    "backgroundColor": "default",
+                    "textAlignment": "left"
+                },
+                "content": [
+                    {
+                        "type": "text",
+                        "text": data["content"],
+                        "styles": {}
+                    }
+                ],
+                "children": []
+            },
+        ])
 @story_bp.route('/writing', methods=['POST'])
 def chapterWriting():
     data = request.get_json()
@@ -88,6 +126,7 @@ def chapterWriting():
         messages=messages
     )
     data["content"] = response.choices[0].message.content
+    # data["contentBlock"] = getContentBlock(data)
     return data, 200
 
 def rewriteChapterDescription(data):
@@ -120,4 +159,49 @@ def saveChapter():
     
 
 
-    
+@story_bp.route('/generate-image', methods=['POST'])
+def create_cover_image():
+    data = request.get_json()
+    plot = data['plot']
+
+    engine_id = "stable-diffusion-xl-beta-v2-2-2"
+    api_host = os.getenv('API_HOST', 'https://api.stability.ai')
+    api_key = os.getenv("NOVELLA_DRAWING_API_KEY")
+
+    if api_key is None:
+        raise Exception("Missing Stability API key.")
+
+    response = requests.post(
+        f"{api_host}/v1/generation/{engine_id}/text-to-image",
+        headers={
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "Authorization": f"Bearer {api_key}"
+        },
+        json={
+            "text_prompts": [
+                {
+                    "text": plot
+                }
+            ],
+            "cfg_scale": 7,
+            "clip_guidance_preset": "FAST_BLUE",
+            "height": 512,
+            "width": 512,
+            "samples": 1,
+            "steps": 10,
+        },
+    )
+
+    if response.status_code != 200:
+        raise Exception("Non-200 response: " + str(response.text))
+
+    folder_name = "content"
+    folder_path = os.path.join(os.getcwd(), folder_name)
+
+    data = response.json()
+
+    for i, image in enumerate(data["artifacts"]):
+        with open(os.path.join(folder_path, "cover.png"), "wb") as f: # replace this if running locally, to where you store the cover file
+            f.write(base64.b64decode(image["base64"]))
+    return {"content": "Success", "role" : "system"}, 200

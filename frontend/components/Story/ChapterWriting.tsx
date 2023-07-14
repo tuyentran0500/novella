@@ -1,6 +1,6 @@
 import { useStoryContext } from "@/context/Story";
 import { Button, Card, CardActions, CardMedia } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import EditChapterWriting from "./EditChapterWriting";
 import { BlockNoteView, useBlockNote } from "@blocknote/react";
 import { getintialContent } from "@/helper/editor";
@@ -8,6 +8,15 @@ const ChapterWriting = (): JSX.Element => {
     const {selectedChapter, generateChapterContent, saveCurrentChapterContent} = useStoryContext();
     const [isEditing, setisEditing] = useState<boolean>(false)
     const editor = useBlockNote({ initialContent: getintialContent(selectedChapter), editable: false})
+    useEffect(() => {
+        const updateBlocks = () => {
+            if (editor && editor.isEditable == false && selectedChapter){ 
+                const result = getintialContent(selectedChapter);
+                editor.replaceBlocks(editor.topLevelBlocks, result); 
+            }
+        }
+        updateBlocks();
+    }, [selectedChapter])
     const onEdit = () => {
         setisEditing(prev => !prev);
         if (editor){

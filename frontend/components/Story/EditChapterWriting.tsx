@@ -10,12 +10,12 @@ interface EditChapterWritngProps {
     editor: BlockNoteEditor<any> | null,
 }
 const EditChapterWriting = ({onEdit, editor} : EditChapterWritngProps): JSX.Element => {
-    const {selectedChapter, generateChapterContent, saveCurrentChapterContent, updateChapterContent} = useStoryContext();
+    const {generateChapterContent, saveCurrentChapterContent, updateChapterContent} = useStoryContext();
 
     editor?.onEditorContentChange(async () => {
         const blocks = editor.topLevelBlocks;
-            const blockContent = JSON.stringify(blocks);
-            const content = await editor.blocksToMarkdown(blocks);
+        const blockContent = JSON.stringify(blocks);
+        const content = await editor.blocksToMarkdown(blocks);
 
         updateChapterContent(blockContent, content);
     });

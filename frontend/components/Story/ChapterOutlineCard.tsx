@@ -1,5 +1,4 @@
-import { Button, Card, CardActions, CardContent, Typography, Divider } from "@mui/material";
-import AddIcon from '@mui/icons-material/Add';
+import { Button, Card, CardActions, CardContent, Typography } from "@mui/material";
 import React from "react";
 import { useStoryContext } from "@/context/Story";
 import { ChapterContent } from "@/interfaces/Story";
