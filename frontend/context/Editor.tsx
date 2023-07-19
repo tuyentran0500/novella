@@ -1,10 +1,9 @@
-import { Block, BlockNoteEditor, BlockSchema, PartialBlock } from '@blocknote/core';
+import { Block, BlockNoteEditor,  PartialBlock } from '@blocknote/core';
 import { ReactSlashMenuItem, defaultReactSlashMenuItems, useBlockNote } from '@blocknote/react';
 import { AddTask } from '@mui/icons-material';
 import React, {useContext} from 'react';
 import { useStoryContext } from './Story';
 import { createChapter } from '@/api/story';
-
 interface EditorContext {
     editor: BlockNoteEditor | null,
 }

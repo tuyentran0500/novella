@@ -10,7 +10,7 @@ interface EditChapterWritngProps {
     editor: BlockNoteEditor<any> | null,
 }
 const EditChapterWriting = ({onEdit, editor} : EditChapterWritngProps): JSX.Element => {
-    const {generateChapterContent, saveCurrentChapterContent, updateChapterContent} = useStoryContext();
+    const {saveCurrentChapterContent, updateChapterContent} = useStoryContext();
 
     editor?.onEditorContentChange(async () => {
         const blocks = editor.topLevelBlocks;
@@ -32,7 +32,6 @@ const EditChapterWriting = ({onEdit, editor} : EditChapterWritngProps): JSX.Elem
         />
         <BlockNoteView editor={editor}/>
         <CardActions>
-            <Button size="small" onClick={generateChapterContent}>Generate</Button>
             <Button size="small" onClick={onSave}>Save</Button>
         </CardActions>
     </Card>

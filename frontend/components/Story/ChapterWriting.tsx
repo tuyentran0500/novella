@@ -23,7 +23,7 @@ const ChapterWritingEditor = (): JSX.Element => {
     
 };
 const ChapterWriting = (): JSX.Element => {
-    const { generateChapterContent, saveCurrentChapterContent} = useStoryContext();
+    const { saveCurrentChapterContent} = useStoryContext();
     const [isEditing, setisEditing] = useState<boolean>(false)
 
     const {editor} = useEditorContext();
@@ -45,7 +45,6 @@ const ChapterWriting = (): JSX.Element => {
             <BlockNoteView  editor={editor}/>
 
             <CardActions>
-                <Button size="small" onClick={generateChapterContent}>Generate</Button>
                 <Button size="small" onClick={onEdit}>Edit</Button>
                 <Button size="small" onClick={saveCurrentChapterContent}>Save</Button>
             </CardActions>
