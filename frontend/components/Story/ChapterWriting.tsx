@@ -1,53 +1,33 @@
+"use client"; // this registers <Editor> as a Client Component
 import { useStoryContext } from "@/context/Story";
 import { Button, Card, CardActions, CardMedia } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import EditChapterWriting from "./EditChapterWriting";
-import { BlockNoteView, ReactSlashMenuItem, defaultReactSlashMenuItems, useBlockNote } from "@blocknote/react";
+import { BlockNoteView } from "@blocknote/react";
 import { getintialContent } from "@/helper/editor";
-import { AddTask } from "@mui/icons-material";
-import { Block, BlockNoteEditor, PartialBlock } from "@blocknote/core";
-const ChapterWriting = (): JSX.Element => {
-    const {selectedChapter, generateChapterContent, saveCurrentChapterContent} = useStoryContext();
-    const [isEditing, setisEditing] = useState<boolean>(false)
-    // Command to insert "Hello World" in bold in a new block below.
-    const insertHelloWorld = (editor: BlockNoteEditor) => {
-        // Block that the text cursor is currently in.
-        const currentBlock: Block<any> = editor.getTextCursorPosition().block;
-
-        // New block we want to insert.
-        const helloWorldBlock : PartialBlock<any>[] = [{
-        type: "paragraph",
-        content: [{ type: "text", text: "Hello World", styles: { bold: true } }],
-        }];
-
-        // Inserting the new block after the current one.
-        editor.insertBlocks(helloWorldBlock, currentBlock, "after"); 
-    };
-
-    // Slash Menu item which executes the command.
-    const insertHelloWorldItem = new ReactSlashMenuItem(
-        "Insert Hello World",
-        insertHelloWorld,
-        ["helloworld", "hw"],
-        "Other",
-        <AddTask />,
-        "Used to insert a block with 'Hello World' below."
-    );
-
-    const editor = useBlockNote({ initialContent: getintialContent(selectedChapter), editable: false,  slashCommands: [...defaultReactSlashMenuItems, insertHelloWorldItem], 
-        // customElements: {
-        // formattingToolbar: 
-        // }
-    })
-    useEffect(() => {
-        const updateBlocks = () => {
-            if (editor && editor.isEditable == false && selectedChapter){ 
-                const result = getintialContent(selectedChapter);
-                editor.replaceBlocks(editor.topLevelBlocks, result); 
+import { EditorProvider, useEditorContext } from "@/context/Editor";
+import { ChapterContent } from "@/interfaces/Story";
+const ChapterWritingEditor = (): JSX.Element => {
+    const { selectedChapter, storyOutlineList} = useStoryContext();
+    return (
+        <React.Fragment>
+            {storyOutlineList.map((story : ChapterContent, key) => (
+                    <EditorProvider key = {story.index} initialContent={getintialContent(story)}>
+                        {selectedChapter.index == story.index && <ChapterWriting/>}
+                    </EditorProvider>
+                    )
+                )
             }
-        }
-        updateBlocks();
-    }, [selectedChapter])
+        </React.Fragment>
+    )
+    
+};
+const ChapterWriting = (): JSX.Element => {
+    const { generateChapterContent, saveCurrentChapterContent} = useStoryContext();
+    const [isEditing, setisEditing] = useState<boolean>(false)
+
+    const {editor} = useEditorContext();
+
     const onEdit = () => {
         setisEditing(prev => !prev);
         if (editor){
@@ -72,4 +52,4 @@ const ChapterWriting = (): JSX.Element => {
         </Card>
     )
 }
-export default ChapterWriting;
+export default ChapterWritingEditor;
