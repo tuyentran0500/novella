@@ -2,12 +2,43 @@ import { useStoryContext } from "@/context/Story";
 import { Button, Card, CardActions, CardMedia } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import EditChapterWriting from "./EditChapterWriting";
-import { BlockNoteView, useBlockNote } from "@blocknote/react";
+import { BlockNoteView, ReactSlashMenuItem, defaultReactSlashMenuItems, useBlockNote } from "@blocknote/react";
 import { getintialContent } from "@/helper/editor";
+import { AddTask } from "@mui/icons-material";
+import { Block, BlockNoteEditor, PartialBlock } from "@blocknote/core";
 const ChapterWriting = (): JSX.Element => {
     const {selectedChapter, generateChapterContent, saveCurrentChapterContent} = useStoryContext();
     const [isEditing, setisEditing] = useState<boolean>(false)
-    const editor = useBlockNote({ initialContent: getintialContent(selectedChapter), editable: false})
+    // Command to insert "Hello World" in bold in a new block below.
+    const insertHelloWorld = (editor: BlockNoteEditor) => {
+        // Block that the text cursor is currently in.
+        const currentBlock: Block<any> = editor.getTextCursorPosition().block;
+
+        // New block we want to insert.
+        const helloWorldBlock : PartialBlock<any>[] = [{
+        type: "paragraph",
+        content: [{ type: "text", text: "Hello World", styles: { bold: true } }],
+        }];
+
+        // Inserting the new block after the current one.
+        editor.insertBlocks(helloWorldBlock, currentBlock, "after"); 
+    };
+
+    // Slash Menu item which executes the command.
+    const insertHelloWorldItem = new ReactSlashMenuItem(
+        "Insert Hello World",
+        insertHelloWorld,
+        ["helloworld", "hw"],
+        "Other",
+        <AddTask />,
+        "Used to insert a block with 'Hello World' below."
+    );
+
+    const editor = useBlockNote({ initialContent: getintialContent(selectedChapter), editable: false,  slashCommands: [...defaultReactSlashMenuItems, insertHelloWorldItem], 
+        // customElements: {
+        // formattingToolbar: 
+        // }
+    })
     useEffect(() => {
         const updateBlocks = () => {
             if (editor && editor.isEditable == false && selectedChapter){ 
