@@ -112,12 +112,13 @@ def getContentBlock(data):
 def chapterWriting():
     data = request.get_json()
     summary = getStoryProgress(data['index'])
-    content = "Write an chapter based on the following description and the summary above: "
-    content += data['title'] + " " + data['description']
-    content += ". Also, do not include the title of the chapter"
+    content = "Write an chapter based on the following description: "
+    content += data['description']
+    content += ". With this title:" + data['title'] + "\n And the summary of previous chapter: " + summary
 
     messages = [
-        {"role": "user", "content": summary},
+        {"role": "system", "content": "Imagine that you are a master novel writer"},
+        # {"role": "assistant", "content": summary},
         {"role": "user", "content": content}
     ]
     print(messages)
