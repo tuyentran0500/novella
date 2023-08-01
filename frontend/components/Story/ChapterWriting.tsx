@@ -1,13 +1,33 @@
+"use client"; // this registers <Editor> as a Client Component
 import { useStoryContext } from "@/context/Story";
 import { Button, Card, CardActions, CardMedia } from "@mui/material";
 import React, { useState } from "react";
 import EditChapterWriting from "./EditChapterWriting";
-import { BlockNoteView, useBlockNote } from "@blocknote/react";
+import { BlockNoteView } from "@blocknote/react";
 import { getintialContent } from "@/helper/editor";
+import { EditorProvider, useEditorContext } from "@/context/Editor";
+import { ChapterContent } from "@/interfaces/Story";
+const ChapterWritingEditor = (): JSX.Element => {
+    const { selectedChapter, storyOutlineList} = useStoryContext();
+    return (
+        <React.Fragment>
+            {storyOutlineList.map((story : ChapterContent, key) => (
+                    <EditorProvider key = {story.index} initialContent={getintialContent(story)}>
+                        {selectedChapter.index == story.index && <ChapterWriting/>}
+                    </EditorProvider>
+                    )
+                )
+            }
+        </React.Fragment>
+    )
+    
+};
 const ChapterWriting = (): JSX.Element => {
-    const {selectedChapter, generateChapterContent, saveCurrentChapterContent} = useStoryContext();
+    const { saveCurrentChapterContent} = useStoryContext();
     const [isEditing, setisEditing] = useState<boolean>(false)
-    const editor = useBlockNote({ initialContent: getintialContent(selectedChapter), editable: false})
+
+    const {editor} = useEditorContext();
+
     const onEdit = () => {
         setisEditing(prev => !prev);
         if (editor){
@@ -25,11 +45,10 @@ const ChapterWriting = (): JSX.Element => {
             <BlockNoteView  editor={editor}/>
 
             <CardActions>
-                <Button size="small" onClick={generateChapterContent}>Generate</Button>
                 <Button size="small" onClick={onEdit}>Edit</Button>
                 <Button size="small" onClick={saveCurrentChapterContent}>Save</Button>
             </CardActions>
         </Card>
     )
 }
-export default ChapterWriting;
+export default ChapterWritingEditor;

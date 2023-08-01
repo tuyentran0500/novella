@@ -104,18 +104,21 @@ export const StoryProvider: React.FC<StoryProviderProps> = ({children}) => {
     }
     const updateChapterContent = (contentBlock: string, content: string) => {
         setSelectedChapter((prev) => ({...prev, "contentBlock": contentBlock, "content" : content}));
+        // const index = selectedChapter.index ?? 0;
+        // setStoryOutlineList(prev => [...prev.slice(0, index), selectedChapter, ...prev.slice(index + 1)])
     }
     const saveCurrentChapterContent = async () => {
         setFetchSelectedChapterStatus('loading');
         const result = await saveChapterContent(selectedChapter);
         if (result != null){
-            setSelectedChapter(result);
+            
+            // const index = selectedChapter.index ?? 0;
+            // setStoryOutlineList(prev => [...prev.slice(0, index), selectedChapter, ...prev.slice(index + 1)])
             setFetchSelectedChapterStatus('succeeded');
         }
         else {
             setFetchSelectedChapterStatus('errored');
         }
-        
     }
     useEffect(() => {
         void (async () => {

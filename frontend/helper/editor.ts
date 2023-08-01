@@ -1,8 +1,9 @@
+import { useStoryContext } from "@/context/Story"
 import { ChapterContent } from "@/interfaces/Story"
 import { PartialBlock } from "@blocknote/core"
 
 export const getintialContent = (selectedChapter: ChapterContent): PartialBlock<any>[] => {
-if (selectedChapter.contentBlock){
+    if (selectedChapter.contentBlock){
         return JSON.parse(selectedChapter.contentBlock)
     }
     return [

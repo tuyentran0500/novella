@@ -2,6 +2,7 @@ import React from "react";
 import StoryOutline from "./StoryOutline";
 import ChapterWriting from "./ChapterWriting";
 import { useStoryContext } from "@/context/Story";
+
 const StoryWriting = (): JSX.Element => {
     const {selectedChapter} = useStoryContext();
     return (

@@ -3,6 +3,7 @@ import { BRAINSTORMING_API, BRAINSTORMING_CONFIRM_API, OUTLINE_API, SAVE_CHAPTER
 import {  ChatResponse } from "./models/chat"
 import { CreateChapterResponse, OutlineStoryResponse } from "./models/story";
 import { ChapterContent } from "@/interfaces/Story";
+import { getintialContent } from "@/helper/editor";
 
 export const getBrainstormResponse = async (data : ChatResponse): Promise<ChatResponse | null> => {
     try {
@@ -51,7 +52,7 @@ export const createChapter = async (data: ChapterContent): Promise<CreateChapter
   try {
     const result = await axios.post<CreateChapterResponse>(WRITING_API, data)
     if (result.status === 200){
-      return result.data
+      return {...result.data, contentBlock: JSON.stringify(getintialContent(result.data))}
     }
   } catch (error) {}
   return null
