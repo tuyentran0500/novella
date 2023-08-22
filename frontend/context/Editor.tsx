@@ -53,9 +53,11 @@ export const EditorProvider: React.FC<EditorProviderProps> = ({children, initial
         // Block that the text cursor is currently in.
         const currentBlock: Block<any> = editor.getTextCursorPosition().block;
         const result = await createChapter(selectedChapter);
+        if (result?.content == undefined) return;
         // New block we want to insert.
-        const helloWorldBlock : any = [
-            {
+        const lines = result?.content.split("\n\n");
+        const helloWorldBlock : any = 
+            lines.map(line => ({
                 type: "paragraph",
                 props: {
                     textColor: "default",
@@ -65,13 +67,12 @@ export const EditorProvider: React.FC<EditorProviderProps> = ({children, initial
                 content: [
                     {
                         type: "text",
-                        text: result?.content,
+                        text: line,
                         styles: {}
                     }
                 ],
                 "children": []
-            },
-        ];
+            }));
         // Inserting the new block after the current one.
         editor.insertBlocks(helloWorldBlock, currentBlock, "after"); 
     };
