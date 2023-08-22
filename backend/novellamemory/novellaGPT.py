@@ -1,7 +1,7 @@
 from langchain import ConversationChain
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts.prompt import PromptTemplate
-from memory import NovellaStoryMemory
+from novellamemory.memory import NovellaStoryMemory
 import os
 
 class NovellaGPT():
