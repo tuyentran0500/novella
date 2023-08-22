@@ -1,12 +1,7 @@
-from langchain import ConversationChain
-from langchain.chat_models import ChatOpenAI
-from langchain.prompts.prompt import PromptTemplate
-
 from langchain.schema import BaseMemory
 from pydantic import BaseModel
 from typing import List, Dict, Any
 from pymongo import MongoClient
-import os
 
 client = MongoClient('mongodb://localhost:27017/')
 db = client['novella']
@@ -18,7 +13,6 @@ class NovellaStoryMemory(BaseMemory, BaseModel):
     chapters: dict = {}
     # Define key to pass information about chapters into prompt.
     memory_key: str = "entities"
-
     def clear(self):
         self.chapters = {}
 
@@ -33,7 +27,6 @@ class NovellaStoryMemory(BaseMemory, BaseModel):
         doc = storyCollection.find_one({})['chapters']
         # Extract known information about chapters, if they exist.
         chapters = [item.get('content', '') for item in doc]
-        print(chapters)
         # Return combined information about chapters to put into context.
         return {self.memory_key: "\n".join(chapters)}
     def save_context(self, inputs: Dict[str, Any], outputs: Dict[str, str]) -> None:

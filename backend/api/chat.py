@@ -1,6 +1,5 @@
 
 from flask import Blueprint, request
-
 import os
 import openai
 from pymongo import MongoClient

@@ -9,7 +9,11 @@ class NovellaGPT():
     template: PromptTemplate
     conversation: ConversationChain
     def __init__(self):
-        self.llm = ChatOpenAI(temperature=0, openai_api_key= os.getenv('NOVELLA_API_KEY'), openai_api_base=os.getenv('NOVELLA_API_BASE'))
+        self.llm = ChatOpenAI(temperature=0)
+        print(os.getenv('NOVELLA_API_BASE'))
+        print("API:", self.llm.openai_api_key)
+        print("API_BASE:", self.llm.openai_api_base)
+
         self.template = """The following is a friendly conversation between a human and an AI. The AI is talkative and provides lots of specific details from its context. If the AI does not know the answer to a question, it truthfully says it does not know. You are provided with information about entities the Human mentions, if relevant.
 
         Relevant entity information:
@@ -27,5 +31,5 @@ class NovellaGPT():
     
 if __name__ == '__main__':
     gpt = NovellaGPT()
-    result = gpt.predict("Suggest a plot content")
+    result = gpt.predict("Could you cite all of chapter 1 content?")
     print(result)
