@@ -1,7 +1,7 @@
 import axios from "axios"
-import { BRAINSTORMING_API, BRAINSTORMING_CONFIRM_API, OUTLINE_API, SAVE_CHAPTER_API, WRITING_API } from "./endpoints"
+import { BRAINSTORMING_API, BRAINSTORMING_CONFIRM_API, IMPROVE_API, OUTLINE_API, SAVE_CHAPTER_API, WRITING_API } from "./endpoints"
 import {  ChatResponse } from "./models/chat"
-import { CreateChapterResponse, OutlineStoryResponse } from "./models/story";
+import { CreateChapterResponse, ImproveChapterResponse, OutlineStoryResponse } from "./models/story";
 import { ChapterContent } from "@/interfaces/Story";
 import { getintialContent } from "@/helper/editor";
 
@@ -47,7 +47,7 @@ export const getStoryOutline = async (): Promise<OutlineStoryResponse | null> =>
   return null
 }
 
-// Get story outline
+// Create Chapter
 export const createChapter = async (data: ChapterContent): Promise<CreateChapterResponse | null> => {
   try {
     const result = await axios.post<CreateChapterResponse>(WRITING_API, data)
@@ -57,6 +57,18 @@ export const createChapter = async (data: ChapterContent): Promise<CreateChapter
   } catch (error) {}
   return null
 }
+
+// Improve the chapter text
+export const improveText = async (data: ChapterContent): Promise<ImproveChapterResponse | null> => {
+  try {
+    const result = await axios.post<ImproveChapterResponse>(IMPROVE_API, data)
+    if (result.status === 200){
+      return result.data
+    }
+  } catch (error) {}
+  return null
+}
+
 
 // save story outline
 export const saveChapterContent = async (data: ChapterContent): Promise<CreateChapterResponse | null> => {

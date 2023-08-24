@@ -130,6 +130,30 @@ def chapterWriting():
     # data["contentBlock"] = getContentBlock(data)
     return data, 200
 
+@story_bp.route('/improve', methods=['POST'])
+def improveSelectedText():
+    data = request.get_json()
+    content = "Based on the context of the chapter: "
+    content += data['description'] + ". "
+    content += "Improve the following text: " + data['content']
+    # content += ". Knowing that this is the content before the text:\n " + data['before']
+    # content += "\n And that this is the content after the text: " + data['after']
+
+
+    messages = [
+        {"role": "system", "content": "Imagine that you are a master novel writer"},
+        # {"role": "assistant", "content": summary},
+        {"role": "user", "content": content}
+    ]
+    print(messages)
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=messages
+    )
+    result = {}
+    result["content"] = response.choices[0].message.content
+    return result, 200
+
 def rewriteChapterDescription(data):
     content = data['content']
     content = "Rewrite this chapter description based on the content: " + content + "."
