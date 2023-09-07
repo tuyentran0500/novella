@@ -1,9 +1,9 @@
 import { Block, BlockNoteEditor,  PartialBlock } from '@blocknote/core';
 import { ReactSlashMenuItem, ToggledStyleButton, Toolbar, ToolbarButton, defaultReactSlashMenuItems, useBlockNote } from '@blocknote/react';
 import { AddTask } from '@mui/icons-material';
-import React, {useContext} from 'react';
+import React, { useContext } from 'react';
 import { useStoryContext } from './Story';
-import { createChapter } from '@/api/story';
+import { createChapter, improveText } from '@/api/story';
 interface EditorContext {
     editor: BlockNoteEditor | null,
 }
@@ -15,10 +15,46 @@ const initialState: EditorContext = {
 const Context = React.createContext<EditorContext>(initialState);
 interface EditorProviderProps {
     children: React.ReactNode,
-    initialContent: PartialBlock<any>[],
+    initialContent: any,
 }
 
 const CustomFormattingToolbar = (props: { editor: BlockNoteEditor }) => {
+    const {selectedChapter} = useStoryContext();
+
+    const improvingSelectedBlock = async () => {
+        console.log("Selected:", props.editor.getSelectedText())
+        console.log(selectedChapter)
+        const result = await improveText({...selectedChapter, content: props.editor.getSelectedText()});   
+        if (result == null) return;     
+        props.editor.forEachBlock((block: Block<any>) => {
+            if (block.id == props.editor.getTextCursorPosition().block.id){
+                const newBlock : any= [{
+                    type: "paragraph",
+                    props: {
+                        textColor: "blue",
+                        backgroundColor: "blue",
+                        textAlignment: "left"
+                    },
+                    content: [
+                        {
+                            type: "text",
+                            text: result.content,
+                            styles: {}
+                        }
+                    ],
+                    "children": []
+                }]
+                props.editor.replaceBlocks([block], newBlock)
+                return false;
+            }
+            return block.id != props.editor.getTextCursorPosition().block.id
+        })
+
+        props.editor.toggleStyles({
+            textColor: "blue",
+            backgroundColor: "blue",
+        });
+    }
     return (
       <Toolbar>
         <ToggledStyleButton editor={props.editor} toggledStyle={"bold"} />
@@ -26,17 +62,7 @@ const CustomFormattingToolbar = (props: { editor: BlockNoteEditor }) => {
         <ToggledStyleButton editor={props.editor} toggledStyle={"underline"} />
         <ToolbarButton
         mainTooltip={"Explore this idea"}
-        onClick={() => {
-            console.log("Selected:", props.editor.getSelectedText())
-            props.editor.forEachBlock((block:  Block<any>) => {
-                console.log(block.content);
-                return block.id != props.editor.getTextCursorPosition().block.id
-            })
-          props.editor.toggleStyles({
-            textColor: "blue",
-            backgroundColor: "blue",
-          });
-        }}
+        onClick={improvingSelectedBlock}
         isSelected={
           props.editor.getActiveStyles().textColor === "blue" &&
           props.editor.getActiveStyles().backgroundColor === "blue"
@@ -53,9 +79,11 @@ export const EditorProvider: React.FC<EditorProviderProps> = ({children, initial
         // Block that the text cursor is currently in.
         const currentBlock: Block<any> = editor.getTextCursorPosition().block;
         const result = await createChapter(selectedChapter);
+        if (result?.content == undefined) return;
         // New block we want to insert.
-        const helloWorldBlock : any = [
-            {
+        const lines = result?.content.split("\n\n");
+        const generatedChapterBlock : any = 
+            lines.map(line => ({
                 type: "paragraph",
                 props: {
                     textColor: "default",
@@ -65,15 +93,14 @@ export const EditorProvider: React.FC<EditorProviderProps> = ({children, initial
                 content: [
                     {
                         type: "text",
-                        text: result?.content,
+                        text: line,
                         styles: {}
                     }
                 ],
                 "children": []
-            },
-        ];
+            }));
         // Inserting the new block after the current one.
-        editor.insertBlocks(helloWorldBlock, currentBlock, "after"); 
+        editor.insertBlocks(generatedChapterBlock, currentBlock, "before"); 
     };
 
     // Slash Menu item which executes the command.
