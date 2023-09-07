@@ -3,14 +3,21 @@ import { ChatProvider, useChatContext } from '@/context/Chat'
 import { Box, Typography } from '@mui/material'
 import React, { useEffect, useRef } from 'react'
 import LoadingChat from './LoadingChat'
+import Image from 'next/image'
 interface ChatContentProps {
     chatContentList : ChatResponse[]
 }
 const tailwindColorClasses = {
-    user: "w-full px-8 py-8 bg-zinc-600 text-white",
-    assistant: 'w-full px-8 py-8 bg-zinc-500 text-white',
+    user: "w-full px-8 py-8 bg-white text-black flex",
+    assistant: 'w-full px-8 py-8 bg-neutral-100 text-black flex',
     system: 'd-none',
   }
+
+const avatarURL = {
+    user: '/avatar.jpg',
+    assistant: '/gpt.png',
+    system: '/gpt.png',
+}
 
 const ChatContent = ({chatContentList} : ChatContentProps) : JSX.Element => {
     const { fetchChatContentStatus: status} = useChatContext();
@@ -24,12 +31,13 @@ const ChatContent = ({chatContentList} : ChatContentProps) : JSX.Element => {
             {
                 chatContentList.filter(prompt => prompt.role != 'system').map((prompt, id) => (
                     <Box key = {id} className={tailwindColorClasses[prompt.role]}>
+                        <Image height={30} width={30} src={avatarURL[prompt.role]} alt="avatar" className='w-8 h-8 mr-4'></Image>
                         <Typography style={{whiteSpace: 'pre-wrap'}}>{prompt.content}</Typography>
                     </Box>
                 ))
             }
             {status == 'loading' && 
-                    <LoadingChat />
+                <LoadingChat />
             }
             <div ref = {bottomChatRef}/>
         </div>
