@@ -135,7 +135,7 @@ def improveSelectedText():
     data = request.get_json()
     content = "Based on the context of the chapter: "
     content += data['description'] + ". "
-    content += "Improve the following text: " + data['content']
+    content += "Add a little more detail to the following pararaph: " + data['content']
     # content += ". Knowing that this is the content before the text:\n " + data['before']
     # content += "\n And that this is the content after the text: " + data['after']
 
