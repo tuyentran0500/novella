@@ -1,28 +1,61 @@
-import { AppBar, Button } from "@mui/material";
-import React from "react";
+import { AppBar, Button, FormControl, IconButton, InputAdornment, MenuItem, Select, SelectChangeEvent, TextField } from "@mui/material";
+import React, { useState } from "react";
 import GrayTextField from "../Common/GrayTextField";
+import SendIcon from '@mui/icons-material/Send';
 import { useForm } from "react-hook-form";
 import { ChatResponse } from "@/api/models/chat";
 import { useChatContext } from "@/context/Chat";
+import { ChatPrompt } from "@/interfaces/Chat";
 const ChatBar = (): JSX.Element => {
-    const { handleSubmit, register } = useForm<ChatResponse>({
+    const [chatMode, setchatMode] = useState("brainstorm")
+    const { handleSubmit, register, reset } = useForm<ChatResponse>({
         defaultValues: {
             role: "user",
             content: ""
         }
     })
-    const { fetchChatResponse: handleChatPrompt} = useChatContext();
+    const handleChange = (event: SelectChangeEvent) => {
+        setchatMode(event.target.value);
+      };
+    const { fetchChatResponse } = useChatContext();
+    const handleChatPrompt = async (data: ChatPrompt) => {
+        await fetchChatResponse(data);
+        reset({role: 'user', content: ''});
+    }
     return (
-        <AppBar position="fixed" className="bg-inherit" sx={{ top: 'auto', bottom: 0 }}>
-        <form onSubmit={handleSubmit(handleChatPrompt)}>
-            <div className="flex p-2">
-                <GrayTextField className="grow bg-gray-300 mr-2 drop-shadow-md" id="outlined-search"
-                sx={{ input: { color: 'white' } }} label="" {...register('content')} focused
-                />
-                <Button className="bg-green-500 hover:bg-green-600 text-white">Submit</Button>
-            </div>
-        </form>
-    </AppBar>
+        <AppBar position="fixed" className="bg-white" sx={{ top: 'auto', bottom: 0 }}>
+            <form onSubmit={handleSubmit(handleChatPrompt)}>
+                <div className="flex p-2">
+                    <Select
+                        className="mr-2 w-36 rounded-lg"
+                        value={chatMode}
+                        onChange={(handleChange)}
+                        displayEmpty
+                        inputProps={{'borderRadius' : 10}}
+                    >
+                        <MenuItem value={"brainstorm"}>Brainstorm</MenuItem>
+                        <MenuItem value={"chapter"}>Chapters</MenuItem>
+                        <MenuItem value={"character"}>Characters</MenuItem>
+                    </Select>
+
+                    <TextField
+                        variant="filled"
+                        placeholder="Add your message"
+                        hiddenLabel
+                        className="grow mr-2 drop-shadow-md" id="outlined-search"
+                        {...register('content')}
+                        InputProps={{ 
+                            sx: { borderRadius: 3 },
+                            endAdornment: <InputAdornment position="end">
+                                <IconButton type="submit">
+                                    <SendIcon className="text-gray-700 hover:text-blue-400"/>
+                                </IconButton>
+                            </InputAdornment>,
+                        }}
+                    />
+                </div>
+            </form>
+        </AppBar>
     )
 }
 export default ChatBar;

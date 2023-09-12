@@ -3,9 +3,9 @@ import React from 'react';
 
 const LoadingChat = (): JSX.Element => {
     return (
-        <div className='flex align-middle bg-zinc-500 overflow-y-auto h-full pb-24 text-white'>
-            <CircularProgress/>
-            <p>Loading</p>
+        <div className='flex content-center overflow-y-auto justify-center pb-12 bg-neutral-100'>
+            <CircularProgress className='text-gray-500'/>
+            <div className='pl-5 self-center'>Loading</div>
         </div>
     )
 }

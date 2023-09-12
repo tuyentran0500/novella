@@ -4,6 +4,7 @@ import { Box, Typography } from '@mui/material'
 import React, { useEffect, useRef } from 'react'
 import LoadingChat from './LoadingChat'
 import Image from 'next/image'
+import EmptyChatSuggestion from './EmtyChatSuggestion'
 interface ChatContentProps {
     chatContentList : ChatResponse[]
 }
@@ -25,9 +26,11 @@ const ChatContent = ({chatContentList} : ChatContentProps) : JSX.Element => {
     useEffect(() => {
         bottomChatRef.current?.scrollIntoView({ behavior: 'smooth'});
     }, [status, chatContentList])
-    
+    if (chatContentList.length == 0){
+        return <EmptyChatSuggestion/>
+    }
     return (
-        <div className='flex flex-col bg-zinc-500 overflow-y-auto h-full pb-24'>
+        <div className='flex flex-col overflow-y-auto h-full pb-24 pt-8'>
             {
                 chatContentList.filter(prompt => prompt.role != 'system').map((prompt, id) => (
                     <Box key = {id} className={tailwindColorClasses[prompt.role]}>

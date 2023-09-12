@@ -6,7 +6,7 @@ const ChatNavbar = (): JSX.Element => {
         setTabID(newValue);
     };
     return (   
-        <Tabs value={tabID} onChange={handleChange} className="bg-white"
+        <Tabs value={tabID} onChange={handleChange} className="bg-white fixed h-4 w-full"
             textColor="inherit"
         >
             <Tab label="Brainstorm"/>
