@@ -5,7 +5,9 @@ export interface ChatPrompt {
 }
 export interface ChatHistory {
     memory : ChatPrompt[],
+    summary: string,
 }
+
 export enum ChatTabID {
     BRAINSTORM,
     CHAPTERS,

@@ -1,4 +1,4 @@
-import { getChatHistory, getChatResponse } from '@/api/chat';
+import { getBrainstormHistory, getBrainstormResponse } from '@/api/chat';
 import { FetchStatusType } from '@/api/models/status';
 import { longGeneratedText } from '@/helper/helper';
 import { ChatPrompt } from '@/interfaces/Chat';
@@ -33,39 +33,43 @@ interface ChatProviderProps {
 
 export const ChatProvider: React.FC<ChatProviderProps> = ({children}) => {
     const [chatContentList, setChatContentList] = useState<ChatPrompt[]>([])
+    const [chatBrainstormContentList, setChatBrainstormContentList] = useState<ChatPrompt[]>([])
+
     const [fetchChatContentStatus, setFetchChatContentStatus] = useState<FetchStatusType>('idle');
+    const [fetchChatBrainstormContentStatus, setFetchChatBrainstormContentStatus] = useState<FetchStatusType>('idle');
+
     const [tabID, setTabID] = useState(0);
     const [storySummary, setStorySummary] = useState(longGeneratedText)
     const changeTab = (id: number) => {
         setTabID(id);
     }
     const fetchChatHistory = async () => {
-        setFetchChatContentStatus('loading');
-        const data = await getChatHistory();
+        setFetchChatBrainstormContentStatus('loading');
+        const data = await getBrainstormHistory();
         if (data != null) {
-            setFetchChatContentStatus('succeeded');
-            setChatContentList([...data]);
+            setFetchChatBrainstormContentStatus('succeeded');
+            setChatBrainstormContentList([...data]);
         }
         else {
-            setFetchChatContentStatus('errored');
+            setFetchChatBrainstormContentStatus('errored');
         }
     }
     const fetchChatResponse = async (data: ChatPrompt) => {
-        setChatContentList(prevState => [...prevState, data])
-        setFetchChatContentStatus('loading');
-        const result = await getChatResponse(data);
+        setChatBrainstormContentList(prevState => [...prevState, data])
+        setFetchChatBrainstormContentStatus('loading');
+        const result = await getBrainstormResponse(data);
         if (result != null){
-            setChatContentList(prevState => [...prevState, result])
-            setFetchChatContentStatus('succeeded');
+            setChatBrainstormContentList(prevState => [...prevState, result])
+            setFetchChatBrainstormContentStatus('succeeded');
         }
         else {
-            setFetchChatContentStatus('errored');
+            setFetchChatBrainstormContentStatus('errored');
         }
-        console.log(chatContentList);
     }
     useEffect(() => {
         void (async () => {
-            const result = await getChatHistory();
+            const result = await getBrainstormHistory();
+            setChatBrainstormContentList(result);
             setChatContentList(result);
         })()
     }, [])

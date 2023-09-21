@@ -12,17 +12,17 @@ db = client['novella']
 openai.api_key = os.getenv('NOVELLA_API_KEY')
 openai.api_base = os.getenv('NOVELLA_API_BASE')
 
-def getChatHistoryById(id = ""):
+def getBrainstormHistoryById(id = ""):
     chatCollection = db['chat']
     if (id == ''):
-        return chatCollection.find_one()['memory']
+        return chatCollection.find_one()['brainstorm']['memory']
     else:
-        return chatCollection.find({"_id": id})['memory']
+        return chatCollection.find({"_id": id})['brainstorm']['memory']
     
 
 @chat_bp.route("", methods=("GET", "POST"))
-def getChatResponse():
-    messages = getChatHistoryById(id = '')
+def getBrainstormResponse():
+    messages = getBrainstormHistoryById(id = '')
     if request.method == 'GET':
         return {"memory": messages}, 200
     data = request.get_json()
@@ -34,13 +34,13 @@ def getChatResponse():
         messages=messages
         )
     messages.append({"content": response.choices[0].message.content, "role" : "assistant"})
-    db['chat'].update_one({}, { "$set": { "memory": messages } })
+    db['chat'].update_one({}, { "$set": { "brainstorm.memory": messages } })
 
     return {"content": response.choices[0].message.content, "role" : "assistant"}, 200
 
 # @chat_bp.route("", methods=("GET", "POST"))
-# def getChatResponse():
-#     messages = getChatHistoryById(id = '')
+# def getBrainstormResponse():
+#     messages = getBrainstormHistoryById(id = '')
 #     if request.method == 'GET':
 #         return {"memory": messages}, 200
 #     data = request.get_json()
