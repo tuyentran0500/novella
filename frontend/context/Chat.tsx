@@ -1,11 +1,15 @@
 import { getChatHistory, getChatResponse } from '@/api/chat';
 import { FetchStatusType } from '@/api/models/status';
+import { longGeneratedText } from '@/helper/helper';
 import { ChatPrompt } from '@/interfaces/Chat';
 import React, {useContext, useEffect, useState} from 'react';
 
 interface ChatContext {
     chatContentList: ChatPrompt[]
     fetchChatContentStatus: FetchStatusType,
+    tabID: number,
+    storySummary: string,
+    changeTab: (id: number) => void,
     fetchChatHistory: () => Promise<void>;
     fetchChatResponse: (data: ChatPrompt) => Promise<void>;
 
@@ -14,6 +18,9 @@ interface ChatContext {
 const initialState: ChatContext = {
     chatContentList: [],
     fetchChatContentStatus: 'idle',
+    changeTab: () => {},
+    storySummary: longGeneratedText,
+    tabID: 0,
     fetchChatHistory: async () => {},
     fetchChatResponse: async (data: ChatPrompt) => {},
 }
@@ -27,7 +34,11 @@ interface ChatProviderProps {
 export const ChatProvider: React.FC<ChatProviderProps> = ({children}) => {
     const [chatContentList, setChatContentList] = useState<ChatPrompt[]>([])
     const [fetchChatContentStatus, setFetchChatContentStatus] = useState<FetchStatusType>('idle');
-
+    const [tabID, setTabID] = useState(0);
+    const [storySummary, setStorySummary] = useState(longGeneratedText)
+    const changeTab = (id: number) => {
+        setTabID(id);
+    }
     const fetchChatHistory = async () => {
         setFetchChatContentStatus('loading');
         const data = await getChatHistory();
@@ -63,6 +74,9 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({children}) => {
             value = {{
                 chatContentList,
                 fetchChatContentStatus,
+                tabID,
+                storySummary,
+                changeTab,
                 fetchChatHistory,
                 fetchChatResponse
             }}

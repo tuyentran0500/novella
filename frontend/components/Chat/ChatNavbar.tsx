@@ -1,16 +1,18 @@
+import { useChatContext } from "@/context/Chat";
 import { Tab, Tabs } from "@mui/material";
-import React, { useState } from "react";
+import React from "react";
 const ChatNavbar = (): JSX.Element => {
-    const [tabID, setTabID] = useState(0);
+    const {tabID, changeTab} = useChatContext();
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-        setTabID(newValue);
+        changeTab(newValue);
     };
     return (   
         <Tabs value={tabID} onChange={handleChange} className="bg-white fixed h-4 w-full"
             textColor="inherit"
         >
             <Tab label="Brainstorm"/>
-            <Tab label="Chapter"/>
+            <Tab label="Chapters"/>
+            <Tab label="Characters"/>
         </Tabs>
     )
 }

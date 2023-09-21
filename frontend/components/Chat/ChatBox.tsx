@@ -1,8 +1,9 @@
 import React from "react"
-import ChatContent from "./ChatContent"
 import { ChatProvider, useChatContext } from "@/context/Chat"
 import ChatNavbar from "./ChatNavbar"
-import ChatBar from "./ChatBar"
+import ChapterTab from "./ChapterTab"
+import { ChatTabID } from "@/interfaces/Chat"
+import BrainstormTab from "./BrainstormTab"
 
 export const Chat: React.FC<{}> = () => {
     return (
@@ -12,13 +13,13 @@ export const Chat: React.FC<{}> = () => {
     )
 }
 const ChatBox = (): JSX.Element => {
-    const {chatContentList } = useChatContext();
+    const { tabID } = useChatContext();
     
     return (
         <div className='flex flex-col'>
             <ChatNavbar/>
-            <ChatContent chatContentList={chatContentList}/>
-            <ChatBar/>
+            {tabID == ChatTabID.BRAINSTORM && <BrainstormTab/>}
+            {tabID == ChatTabID.CHAPTERS && <ChapterTab/> }
         </div>
     )
 }

@@ -1,6 +1,5 @@
-import { AppBar, Button, FormControl, IconButton, InputAdornment, MenuItem, Select, SelectChangeEvent, TextField } from "@mui/material";
+import { AppBar, IconButton, InputAdornment, MenuItem, Select, SelectChangeEvent, TextField } from "@mui/material";
 import React, { useState } from "react";
-import GrayTextField from "../Common/GrayTextField";
 import SendIcon from '@mui/icons-material/Send';
 import { useForm } from "react-hook-form";
 import { ChatResponse } from "@/api/models/chat";
@@ -27,7 +26,7 @@ const ChatBar = (): JSX.Element => {
             <form onSubmit={handleSubmit(handleChatPrompt)}>
                 <div className="flex p-2">
                     <Select
-                        className="mr-2 w-36 rounded-lg"
+                        className="mr-2 h-14 content-end w-36 rounded-lg"
                         value={chatMode}
                         onChange={(handleChange)}
                         displayEmpty
@@ -42,6 +41,7 @@ const ChatBar = (): JSX.Element => {
                         variant="filled"
                         placeholder="Add your message"
                         hiddenLabel
+                        multiline
                         className="grow mr-2 drop-shadow-md" id="outlined-search"
                         {...register('content')}
                         InputProps={{ 
