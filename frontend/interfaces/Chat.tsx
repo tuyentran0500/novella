@@ -1,6 +1,7 @@
 export interface ChatPrompt {
     content: string,
-    role: 'user' | 'assistant' | 'system',
+    suggestionList: string[]
+    role: 'user' | 'assistant' | 'system' | 'suggestion',
     temperature?: number,
 }
 export interface ChatHistory {

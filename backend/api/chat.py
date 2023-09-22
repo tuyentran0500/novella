@@ -35,8 +35,16 @@ def getBrainstormResponse():
         )
     messages.append({"content": response.choices[0].message.content, "role" : "assistant"})
     db['chat'].update_one({}, { "$set": { "brainstorm.memory": messages } })
+    # Add suggestion list
+    messages.append({"content": "Suggest the next brainstorming step in less than 40 characters", "role" : "user"})
+    suggestionResponse = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=messages,
+        n=4
+    )
+    suggestionList = [suggestionResponse.choices[i].message.content for i in range(4)]
 
-    return {"content": response.choices[0].message.content, "role" : "assistant"}, 200
+    return {"content": response.choices[0].message.content, "role" : "assistant", "suggestionList" : suggestionList}, 200
 
 # @chat_bp.route("", methods=("GET", "POST"))
 # def getBrainstormResponse():

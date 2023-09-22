@@ -5,24 +5,25 @@ import { ChatPrompt } from '@/interfaces/Chat';
 import React, {useContext, useEffect, useState} from 'react';
 
 interface ChatContext {
-    chatContentList: ChatPrompt[]
-    fetchChatContentStatus: FetchStatusType,
+    chatBrainstormContentList: ChatPrompt[]
+    fetchChatBrainstormContentStatus: FetchStatusType,
     tabID: number,
     storySummary: string,
     changeTab: (id: number) => void,
-    fetchChatHistory: () => Promise<void>;
-    fetchChatResponse: (data: ChatPrompt) => Promise<void>;
-
+    fetchChatHistory: () => Promise<void>
+    fetchChatResponse: (data: ChatPrompt) => Promise<void>
+    updateBrainstormContentList: (data: ChatPrompt) => Promise<void>
 }
 
 const initialState: ChatContext = {
-    chatContentList: [],
-    fetchChatContentStatus: 'idle',
+    chatBrainstormContentList: [],
+    fetchChatBrainstormContentStatus: 'idle',
     changeTab: () => {},
     storySummary: longGeneratedText,
     tabID: 0,
     fetchChatHistory: async () => {},
     fetchChatResponse: async (data: ChatPrompt) => {},
+    updateBrainstormContentList: async (data: ChatPrompt) => {},
 }
 
 const Context = React.createContext<ChatContext>(initialState);
@@ -32,10 +33,8 @@ interface ChatProviderProps {
 }
 
 export const ChatProvider: React.FC<ChatProviderProps> = ({children}) => {
-    const [chatContentList, setChatContentList] = useState<ChatPrompt[]>([])
     const [chatBrainstormContentList, setChatBrainstormContentList] = useState<ChatPrompt[]>([])
 
-    const [fetchChatContentStatus, setFetchChatContentStatus] = useState<FetchStatusType>('idle');
     const [fetchChatBrainstormContentStatus, setFetchChatBrainstormContentStatus] = useState<FetchStatusType>('idle');
 
     const [tabID, setTabID] = useState(0);
@@ -55,7 +54,18 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({children}) => {
         }
     }
     const fetchChatResponse = async (data: ChatPrompt) => {
-        setChatBrainstormContentList(prevState => [...prevState, data])
+        if (data.role == 'suggestion'){
+            // Find the last object in the array using negative indexing
+            setChatBrainstormContentList(prevState => {
+                const newState = [...prevState];
+                // Update the 'role' property of the last object
+                if (newState.length > 0) {
+                  newState[newState.length - 1] = {...data, role: 'user'}
+                }
+                return newState;
+            })
+        }
+        else setChatBrainstormContentList(prevState => [...prevState, data])
         setFetchChatBrainstormContentStatus('loading');
         const result = await getBrainstormResponse(data);
         if (result != null){
@@ -66,23 +76,26 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({children}) => {
             setFetchChatBrainstormContentStatus('errored');
         }
     }
+    const updateBrainstormContentList = async (data: ChatPrompt) => {
+        setChatBrainstormContentList(prevState => [...prevState, data]);
+    }
     useEffect(() => {
         void (async () => {
             const result = await getBrainstormHistory();
             setChatBrainstormContentList(result);
-            setChatContentList(result);
         })()
     }, [])
     return (
         <Context.Provider
             value = {{
-                chatContentList,
-                fetchChatContentStatus,
+                chatBrainstormContentList,
+                fetchChatBrainstormContentStatus,
                 tabID,
                 storySummary,
                 changeTab,
                 fetchChatHistory,
-                fetchChatResponse
+                fetchChatResponse,
+                updateBrainstormContentList,
             }}
         >
             {children}

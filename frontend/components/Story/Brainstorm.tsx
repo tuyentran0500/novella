@@ -1,7 +1,7 @@
 import { Button, Checkbox, FormControl, InputLabel, ListItemText, MenuItem, OutlinedInput, Select, SelectChangeEvent, Slider } from '@mui/material'
 import React from 'react'
 import { useForm } from 'react-hook-form';
-import ChatContent from '../Chat/ChatContent';
+import ChatContent from '../Chat/ChatContentList';
 import { useStoryContext } from '@/context/Story';
 import { ChatPrompt } from '@/interfaces/Chat';
 import TemperatureSlider from './TemperatureSlider';

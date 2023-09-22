@@ -1,13 +1,13 @@
 import { useChatContext } from "@/context/Chat";
 import React from "react";
-import ChatContent from "./ChatContent";
+import ChatContentList from "./ChatContentList";
 import ChatBar from "./ChatBar";
 const BrainstormTab = (): JSX.Element => {
-    const {chatContentList } = useChatContext();
+    const {chatBrainstormContentList } = useChatContext();
 
     return (
         <div className='flex flex-col'>
-            <ChatContent chatContentList={chatContentList}/>
+            <ChatContentList chatContentList={chatBrainstormContentList}/>
             <ChatBar/>
         </div>
     )
