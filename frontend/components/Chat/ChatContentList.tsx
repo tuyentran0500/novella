@@ -22,7 +22,7 @@ const ChatContentList = ({chatContentList} : ChatContentListProps) : JSX.Element
         <div className='flex flex-col overflow-y-auto h-full pb-24 pt-8'>
             {
                 chatContentList.filter(prompt => prompt.role != 'system').map((prompt, id) => (
-                    <ChatContent key={id} prompt = {prompt} showSuggestion={id == chatContentList.length - 1}/>
+                    <ChatContent key={id} prompt = {prompt} showSuggestion={id == chatContentList.length - 1 && id != 0}/>
                 ))
             }
             {status == 'loading' && 

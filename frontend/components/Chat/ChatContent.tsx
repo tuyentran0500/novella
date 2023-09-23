@@ -1,9 +1,11 @@
 import { ChatResponse } from "@/api/models/chat";
-import { Box, Typography } from "@mui/material";
-import React from "react";
+import { Box, IconButton, Typography } from "@mui/material";
+import React, { useState } from "react";
 import Image from 'next/image'
 import SuggestChatContent from "./SuggestionChatContent";
 import NextStepSuggestion from "./NextStepSuggestion";
+import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
+import ModeEditOutlineOutlinedIcon from '@mui/icons-material/ModeEditOutlineOutlined';
 interface ChatContentProps {
     prompt : ChatResponse,
     showSuggestion: boolean,
@@ -24,14 +26,30 @@ const avatarURL = {
 }
 
 const ChatContent = ({prompt, showSuggestion = true} : ChatContentProps): JSX.Element => {
+    const [hover, setHover] = useState(false)
     return (
-        <div className="flex flex-col">
+        <div className="flex flex-col" 
+            onMouseEnter={() => setHover(prompt.role == 'assistant')}
+            onMouseLeave={() => setHover(false)}
+        >
             <Box className={tailwindColorClasses[prompt.role]}>
                 <Image height={30} width={30} src={avatarURL[prompt.role]} alt="avatar" className='w-8 h-8 mr-4'></Image>
-                <div className="flex flex-col">
-                    <Typography style={{whiteSpace: 'pre-wrap'}}>{prompt.content}</Typography>
+                <div className="flex flex-col grow">
+                    <Typography style={{whiteSpace: 'pre-wrap'}} className={hover ? "" : "mb-8"}>{prompt.content}</Typography>
+                    {hover &&
+                    <div className="flex flex-row-reverse h-8">
+                        <IconButton>
+                            <DeleteOutlinedIcon/>
+                        </IconButton>
+                        <IconButton>
+                            <ModeEditOutlineOutlinedIcon/>
+                        </IconButton>
+                    </div>
+                    }
                     {prompt.role == 'suggestion' && <SuggestChatContent prompts={prompt}/>}
+
                 </div>
+
             </Box>
             {showSuggestion && <NextStepSuggestion prompt={prompt}/>}
         </div>
