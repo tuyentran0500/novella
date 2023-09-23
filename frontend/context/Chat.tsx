@@ -1,4 +1,4 @@
-import { getBrainstormHistory, getBrainstormResponse } from '@/api/chat';
+import { getBrainstormHistory, getBrainstormResponse, getBrainstormSummary } from '@/api/chat';
 import { FetchStatusType } from '@/api/models/status';
 import { longGeneratedText } from '@/helper/helper';
 import { ChatPrompt } from '@/interfaces/Chat';
@@ -39,6 +39,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({children}) => {
 
     const [tabID, setTabID] = useState(0);
     const [storySummary, setStorySummary] = useState(longGeneratedText)
+    const [fetchStorySummaryStatus, setfetchStorySummaryStatus] = useState<FetchStatusType>('idle')
     const changeTab = (id: number) => {
         setTabID(id);
     }
@@ -79,10 +80,17 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({children}) => {
     const updateBrainstormContentList = async (data: ChatPrompt) => {
         setChatBrainstormContentList(prevState => [...prevState, data]);
     }
+    const fetchStorySummary = async () => {
+        setfetchStorySummaryStatus('loading');
+        const result = await getBrainstormSummary();
+        setStorySummary(result);
+        setfetchStorySummaryStatus('succeeded');
+    }
     useEffect(() => {
         void (async () => {
             const result = await getBrainstormHistory();
             setChatBrainstormContentList(result);
+            fetchStorySummary();
         })()
     }, [])
     return (

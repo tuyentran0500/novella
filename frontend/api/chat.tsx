@@ -21,3 +21,14 @@ export const getBrainstormHistory = async (): Promise<ChatResponse[]> => {
   } catch (error) {}
   return []
 }
+
+export const getBrainstormSummary = async (): Promise<string> => {
+  try {
+    const result = await axios<BrainstormHistoryResponse>(CHAT_BRAINSTORM_API);
+    if (result.status === 200) {
+      console.log(result);
+      return result.data.summary
+    }
+  } catch (error) {}
+  return ""
+}

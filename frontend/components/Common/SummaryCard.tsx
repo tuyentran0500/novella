@@ -2,13 +2,14 @@ import React, { useState } from "react";
 import Image from 'next/image'
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import FullscreenOutlinedIcon from '@mui/icons-material/FullscreenOutlined';
-import { AppBar, Collapse, IconButton } from "@mui/material";
+import { Collapse, IconButton, Tooltip, Typography } from "@mui/material";
+import BorderColorIcon from '@mui/icons-material/BorderColor';
 interface SummaryCardProps {
     title: string,
     content: string,
 }
 const SummaryCard = ({title, content} : SummaryCardProps): JSX.Element => {
-    const [isFullMode, SetIsFullMode] = useState(true)
+    const [isFullMode, SetIsFullMode] = useState(false)
     return (
         <div className="p-4">
             <div className="flex align-middle">
@@ -17,15 +18,27 @@ const SummaryCard = ({title, content} : SummaryCardProps): JSX.Element => {
             </div>
             <Collapse in = {isFullMode}>
                 <div className="pt-4 text-center">
-                    {content}
+                    
+                    <Typography
+                        style={{whiteSpace: 'pre-wrap'}}
+                    >
+                        {content}
+                    </Typography>
                 </div>
             </Collapse>
-            <div className="flex flex-row-reverse">
-                <IconButton onClick={() => SetIsFullMode(prev => !prev)}>
-                    {isFullMode && <FullscreenExitIcon/>}
-                    {!isFullMode && <FullscreenOutlinedIcon/>}
-                </IconButton>
-            </div>
+            <div className="flex flex-row-reverse align-top">
+                    <IconButton onClick={() => SetIsFullMode(prev => !prev)}>
+                        {isFullMode && <FullscreenExitIcon/>}
+                        {!isFullMode && <FullscreenOutlinedIcon/>}
+                    </IconButton>
+                    {isFullMode && 
+                    <Tooltip title="Generate chapter outline">
+                        <IconButton>
+                            <BorderColorIcon/>
+                        </IconButton>
+                    </Tooltip>
+}
+                </div>
         </div>
 
     )

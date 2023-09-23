@@ -5,7 +5,7 @@ import Image from 'next/image'
 import SuggestChatContent from "./SuggestionChatContent";
 import NextStepSuggestion from "./NextStepSuggestion";
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
-import ModeEditOutlineOutlinedIcon from '@mui/icons-material/ModeEditOutlineOutlined';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 interface ChatContentProps {
     prompt : ChatResponse,
     showSuggestion: boolean,
@@ -39,10 +39,10 @@ const ChatContent = ({prompt, showSuggestion = true} : ChatContentProps): JSX.El
                     {hover &&
                     <div className="flex flex-row-reverse h-8">
                         <IconButton>
-                            <DeleteOutlinedIcon/>
+                            <DeleteOutlinedIcon className="text-black"/>
                         </IconButton>
                         <IconButton>
-                            <ModeEditOutlineOutlinedIcon/>
+                            <AddCircleOutlineIcon className="text-black"/>
                         </IconButton>
                     </div>
                     }
