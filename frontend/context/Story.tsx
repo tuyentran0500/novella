@@ -1,6 +1,7 @@
 import { ChatResponse } from '@/api/models/chat';
 import { FetchStatusType } from '@/api/models/status';
 import { confirmBrainstormResponse, createChapter, getBrainstormHistory, getBrainstormResponse, getStoryOutline, saveChapterContent } from '@/api/story';
+import { defaultGenres } from '@/helper/helper';
 import { ChatPrompt } from '@/interfaces/Chat';
 import { ChapterContent, defaultChapterContent } from '@/interfaces/Story';
 import React, {useContext, useEffect, useState} from 'react';
@@ -20,13 +21,7 @@ interface StoryContext {
     updateChapterContent: (contentBlock: string, content: string) => void,
     handleWritingChapter: (data: ChapterContent) => Promise<void>,
 }
-const defaultGenres = [
-    'Drama',
-    'Fantasy',
-    'Mystery',
-    'Romance',
-    'Sci-fi',
-]
+
 const initialState: StoryContext = {
     chatContentList: [],
     storyOutlineList: [],

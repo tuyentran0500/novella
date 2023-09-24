@@ -35,7 +35,6 @@ const SuggestChatContent = ({prompts} : ChatContentProps): JSX.Element => {
             </Select>
             <IconButton type="submit" className="ml-2 self-center" onClick={submitSuggestion}>
                 <SendIcon className=" text-gray-700 hover:text-blue-400"/>
-
             </IconButton>
         </div>
 

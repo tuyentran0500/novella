@@ -1,10 +1,11 @@
 import { useChatContext } from "@/context/Chat";
+import { defaultGenres } from "@/helper/helper";
 import { Button } from "@mui/material";
 import React from "react";
 const EmptyChatSuggestion = (): JSX.Element => {
     const {updateBrainstormContentList, fetchChatResponse} = useChatContext();
     const selectGenreHandle = () => {
-        updateBrainstormContentList({content : "Help me brainstorm a story based on the following genres", suggestionList: ["Romantic", "Comedy", "Tragedy"], role: 'suggestion'});
+        updateBrainstormContentList({content : "Help me brainstorm a story based on the following genres", suggestionList: defaultGenres, role: 'suggestion'});
     }
     const suggestMainCharacters = () => {
         updateBrainstormContentList({content : "Suggest a main character for a story which is:", suggestionList: ["Hero", "Villain", "Man", "Women"], role: 'suggestion'});
