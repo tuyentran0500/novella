@@ -4,12 +4,19 @@ import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import FullscreenOutlinedIcon from '@mui/icons-material/FullscreenOutlined';
 import { Collapse, IconButton, Tooltip, Typography } from "@mui/material";
 import BorderColorIcon from '@mui/icons-material/BorderColor';
+import { useChatContext } from "@/context/Chat";
+import { ChatTabID } from "@/interfaces/Chat";
 interface SummaryCardProps {
     title: string,
     content: string,
 }
 const SummaryCard = ({title, content} : SummaryCardProps): JSX.Element => {
     const [isFullMode, SetIsFullMode] = useState(false)
+    const {confirmBrainstorm, changeTab} = useChatContext();
+    const startOutline = async () => {
+        confirmBrainstorm();
+        changeTab(ChatTabID.CHAPTERS);
+    }
     return (
         <div className="p-4">
             <div className="flex align-middle">
@@ -33,7 +40,7 @@ const SummaryCard = ({title, content} : SummaryCardProps): JSX.Element => {
                     </IconButton>
                     {isFullMode && 
                     <Tooltip title="Generate chapter outline">
-                        <IconButton>
+                        <IconButton onClick={startOutline}>
                             <BorderColorIcon/>
                         </IconButton>
                     </Tooltip>

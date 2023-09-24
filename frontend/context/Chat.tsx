@@ -1,5 +1,6 @@
 import { getBrainstormHistory, getBrainstormResponse, getBrainstormSummary } from '@/api/chat';
 import { FetchStatusType } from '@/api/models/status';
+import { confirmBrainstormResponse } from '@/api/story';
 import { longGeneratedText } from '@/helper/helper';
 import { ChatPrompt } from '@/interfaces/Chat';
 import React, {useContext, useEffect, useState} from 'react';
@@ -13,6 +14,7 @@ interface ChatContext {
     fetchChatHistory: () => Promise<void>
     fetchChatResponse: (data: ChatPrompt) => Promise<void>
     updateBrainstormContentList: (data: ChatPrompt) => Promise<void>
+    confirmBrainstorm: () => Promise<void>,
 }
 
 const initialState: ChatContext = {
@@ -24,6 +26,7 @@ const initialState: ChatContext = {
     fetchChatHistory: async () => {},
     fetchChatResponse: async (data: ChatPrompt) => {},
     updateBrainstormContentList: async (data: ChatPrompt) => {},
+    confirmBrainstorm: async () => {},
 }
 
 const Context = React.createContext<ChatContext>(initialState);
@@ -71,11 +74,16 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({children}) => {
         const result = await getBrainstormResponse(data);
         if (result != null){
             setChatBrainstormContentList(prevState => [...prevState, result])
+            fetchStorySummary();
             setFetchChatBrainstormContentStatus('succeeded');
         }
         else {
             setFetchChatBrainstormContentStatus('errored');
         }
+    }
+
+    const confirmBrainstorm = async (): Promise<void> => {
+        const result = await confirmBrainstormResponse({"content" : storySummary, role: 'user', suggestionList: []});
     }
     const updateBrainstormContentList = async (data: ChatPrompt) => {
         setChatBrainstormContentList(prevState => [...prevState, data]);
@@ -104,6 +112,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({children}) => {
                 fetchChatHistory,
                 fetchChatResponse,
                 updateBrainstormContentList,
+                confirmBrainstorm
             }}
         >
             {children}

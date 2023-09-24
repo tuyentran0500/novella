@@ -37,7 +37,6 @@ def getBrainstormResponse():
     data = request.get_json()
     content = data['content']
     messages.append({"role": "user", "content": content})
-    print(messages)
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=messages

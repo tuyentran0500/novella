@@ -49,7 +49,7 @@ def confirmBrainstormIdea():
 
 def getOutlineStoryList(summary):
     content = "With the following idea:" + summary + "\n"
-    content += "Suggest an outline in the following format: ``` [ { \"title\" : \"\", \"description\": \"\", \"index\": number}]``` with index start from 0."
+    content += "Suggest an outline chapters in the following format: ``` [ { \"title\" : \"\", \"description\": \"\", \"index\": number}]``` with index start from 0."
     messages = [{"role": "user", "content": content}]
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",

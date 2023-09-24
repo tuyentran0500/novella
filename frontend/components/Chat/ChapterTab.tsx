@@ -2,7 +2,7 @@ import React from "react";
 import SummaryCard from "../Common/SummaryCard";
 import { useChatContext } from "@/context/Chat";
 import WritingAppBar from "./WritingAppBar";
-import ChapterList from "./ChapterList";
+import ChapterList from "../Story/ChapterList";
 const ChapterTab = ():JSX.Element => {
     const {storySummary} = useChatContext();
     return (
