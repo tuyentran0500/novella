@@ -4,15 +4,17 @@ import ChatContentList from "./ChatContentList";
 import ChatBar from "./ChatBar";
 import SummaryCard from "../Common/SummaryCard";
 import { AppBar } from "@mui/material";
+import { ChatMode } from "@/interfaces/Chat";
+import StoryChat from "./StoryChat";
+import ChaptersChat from "./ChaptersChat";
 const BrainstormTab = (): JSX.Element => {
-    const {chatBrainstormContentList, storySummary } = useChatContext();
+    const { chatMode } = useChatContext();
 
     return (
-        <div className='flex flex-col'>
-            <AppBar position="fixed" className="bg-white text-black" sx={{ top: 96, bottom: 'auto' }}>
-                <SummaryCard content={storySummary} title="Story Summary"/>
-            </AppBar>
-            <ChatContentList chatContentList={chatBrainstormContentList}/>
+        <div className='flex flex-col'> 
+            {chatMode == ChatMode.STORY && <StoryChat/>}
+            {chatMode == ChatMode.CHAPTERS && <ChaptersChat/>}
+
             <ChatBar/>
         </div>
     )

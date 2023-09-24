@@ -14,3 +14,9 @@ export enum ChatTabID {
     CHAPTERS,
     CHARACTERS,
 }
+
+export enum ChatMode {
+    STORY = "Story",
+    CHAPTERS = "Chapters",
+    CHARACTERS = "Characters",
+}

@@ -2,15 +2,17 @@ import { getBrainstormHistory, getBrainstormResponse, getBrainstormSummary } fro
 import { FetchStatusType } from '@/api/models/status';
 import { confirmBrainstormResponse } from '@/api/story';
 import { longGeneratedText } from '@/helper/helper';
-import { ChatPrompt } from '@/interfaces/Chat';
+import { ChatMode, ChatPrompt } from '@/interfaces/Chat';
 import React, {useContext, useEffect, useState} from 'react';
 
 interface ChatContext {
     chatBrainstormContentList: ChatPrompt[]
     fetchChatBrainstormContentStatus: FetchStatusType,
     tabID: number,
+    chatMode: string,
     storySummary: string,
     changeTab: (id: number) => void,
+    changeChatDialog: (id: ChatMode) => void,
     fetchChatHistory: () => Promise<void>
     fetchChatResponse: (data: ChatPrompt) => Promise<void>
     updateBrainstormContentList: (data: ChatPrompt) => Promise<void>
@@ -21,8 +23,10 @@ const initialState: ChatContext = {
     chatBrainstormContentList: [],
     fetchChatBrainstormContentStatus: 'idle',
     changeTab: () => {},
+    changeChatDialog: () => {},
     storySummary: longGeneratedText,
     tabID: 0,
+    chatMode: ChatMode.STORY,
     fetchChatHistory: async () => {},
     fetchChatResponse: async (data: ChatPrompt) => {},
     updateBrainstormContentList: async (data: ChatPrompt) => {},
@@ -41,10 +45,14 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({children}) => {
     const [fetchChatBrainstormContentStatus, setFetchChatBrainstormContentStatus] = useState<FetchStatusType>('idle');
 
     const [tabID, setTabID] = useState(0);
+    const [chatMode, setChatMode] = useState(ChatMode.STORY)
     const [storySummary, setStorySummary] = useState(longGeneratedText)
     const [fetchStorySummaryStatus, setfetchStorySummaryStatus] = useState<FetchStatusType>('idle')
     const changeTab = (id: number) => {
         setTabID(id);
+    }
+    const changeChatDialog = (id: ChatMode) => {
+        setChatMode(id);
     }
     const fetchChatHistory = async () => {
         setFetchChatBrainstormContentStatus('loading');
@@ -107,8 +115,10 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({children}) => {
                 chatBrainstormContentList,
                 fetchChatBrainstormContentStatus,
                 tabID,
+                chatMode,
                 storySummary,
                 changeTab,
+                changeChatDialog,
                 fetchChatHistory,
                 fetchChatResponse,
                 updateBrainstormContentList,

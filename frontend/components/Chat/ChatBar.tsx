@@ -4,9 +4,10 @@ import SendIcon from '@mui/icons-material/Send';
 import { useForm } from "react-hook-form";
 import { ChatResponse } from "@/api/models/chat";
 import { useChatContext } from "@/context/Chat";
-import { ChatPrompt } from "@/interfaces/Chat";
+import { ChatMode, ChatPrompt } from "@/interfaces/Chat";
 const ChatBar = (): JSX.Element => {
-    const [chatMode, setchatMode] = useState("brainstorm")
+    const { fetchChatResponse, chatMode, changeChatDialog } = useChatContext();
+
     const { handleSubmit, register, reset } = useForm<ChatResponse>({
         defaultValues: {
             role: "user",
@@ -14,9 +15,8 @@ const ChatBar = (): JSX.Element => {
         }
     })
     const handleChange = (event: SelectChangeEvent) => {
-        setchatMode(event.target.value);
+        changeChatDialog(event.target.value as ChatMode)
       };
-    const { fetchChatResponse } = useChatContext();
     const handleChatPrompt = async (data: ChatPrompt) => {
         await fetchChatResponse(data);
         reset({role: 'user', content: ''});
@@ -32,9 +32,9 @@ const ChatBar = (): JSX.Element => {
                         displayEmpty
                         inputProps={{'borderRadius' : 10}}
                     >
-                        <MenuItem value={"brainstorm"}>Brainstorm</MenuItem>
-                        <MenuItem value={"chapter"}>Chapters</MenuItem>
-                        <MenuItem value={"character"}>Characters</MenuItem>
+                        <MenuItem value={ChatMode.STORY}>Brainstorm</MenuItem>
+                        <MenuItem value={ChatMode.CHAPTERS}>Chapters</MenuItem>
+                        <MenuItem value={ChatMode.CHARACTERS}>Characters</MenuItem>
                     </Select>
 
                     <TextField
