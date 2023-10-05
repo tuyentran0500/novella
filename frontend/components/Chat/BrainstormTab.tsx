@@ -1,9 +1,6 @@
 import { useChatContext } from "@/context/Chat";
 import React from "react";
-import ChatContentList from "./ChatContentList";
 import ChatBar from "./ChatBar";
-import SummaryCard from "../Common/SummaryCard";
-import { AppBar } from "@mui/material";
 import { ChatMode } from "@/interfaces/Chat";
 import StoryChat from "./StoryChat";
 import ChaptersChat from "./ChaptersChat";

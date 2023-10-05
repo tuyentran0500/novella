@@ -9,7 +9,7 @@ const StoryChat = (): JSX.Element => {
     return (
         <div className='flex flex-col'> 
             <AppBar position="fixed" className="bg-white text-black" sx={{ top: 96, bottom: 'auto' }}>
-                <SummaryCard content={storySummary} title="Story Summary"/>
+                {chatBrainstormContentList.length != 0 && <SummaryCard content={storySummary} title="Chapter Summary"/>}
             </AppBar>
             <ChatContentList chatContentList={chatBrainstormContentList}/>
         </div>

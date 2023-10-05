@@ -14,7 +14,7 @@ const EmptyChatSuggestion = (): JSX.Element => {
         fetchChatResponse({content : content, role: "user", suggestionList: []});
     }
     return (
-        <div className="flex flex-col items-center pt-12 h-full">
+        <div className="flex flex-col items-center pt-24 h-full">
             <p>Welcome to Novella.</p>
             <p>Lets start your books with.</p>
             <div className="grid grid-rows-2 grid-cols-2 bg-neural-100 gap-4 pt-8">
