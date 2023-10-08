@@ -2,15 +2,17 @@ import { AppBar } from "@mui/material";
 import React from "react";
 import { useChatContext } from "@/context/Chat";
 import ChapterSummaryCard from "./ChapterSummaryCard";
+import ChatContentList from "./ChatContentList";
 const ChaptersChat = (): JSX.Element => {
-    const {chatBrainstormContentList, storySummary } = useChatContext();
-
+    const {selectedChapter } = useChatContext();
     return (
         <div className='flex flex-col'> 
             <AppBar position="fixed" className="bg-white text-black" sx={{ top: 96, bottom: 'auto' }}>
-                {chatBrainstormContentList.length != 0 && <ChapterSummaryCard content={storySummary} title="Chapter Summary"/>}
+                <ChapterSummaryCard title="Chapter Summary"/>
             </AppBar>
-            {/* <ChatContentList chatContentList={chatBrainstormContentList}/> */}
+            <div className="pt-16">
+                <ChatContentList chatContentList={selectedChapter.memory}/>
+            </div>
         </div>
     )
 }

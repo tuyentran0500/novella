@@ -44,6 +44,16 @@ def confirmBrainstormIdea():
             "chapters" : outlineList,
         }
     })
+    db['chat'].update_one({}, {
+        "$set": {
+            "chapters": [{
+                "memory": [],
+                "summary": chapter["description"],
+                "title": chapter["title"]
+            } for chapter in outlineList]
+        }
+    })
+
     
     return {"content": "Succeed!", "role" : "system"}, 200
 

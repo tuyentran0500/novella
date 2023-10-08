@@ -1,18 +1,21 @@
-import { getBrainstormHistory, getBrainstormResponse, getBrainstormSummary } from '@/api/chat';
+import { getBrainstormHistory, getBrainstormResponse } from '@/api/chat';
 import { FetchStatusType } from '@/api/models/status';
 import { confirmBrainstormResponse } from '@/api/story';
 import { longGeneratedText } from '@/helper/helper';
-import { ChatMode, ChatPrompt } from '@/interfaces/Chat';
+import { ChatHistory, ChatMode, ChatPrompt, defaultSelectedChapterHistory } from '@/interfaces/Chat';
 import React, {useContext, useEffect, useState} from 'react';
 
 interface ChatContext {
     chatBrainstormContentList: ChatPrompt[]
-    fetchChatBrainstormContentStatus: FetchStatusType,
+    fetchChatHistoryStatus: FetchStatusType,
     tabID: number,
     chatMode: string,
     storySummary: string,
+    chapterHistoryList: ChatHistory[],
+    selectedChapter: ChatHistory,
     changeTab: (id: number) => void,
     changeChatDialog: (id: ChatMode) => void,
+    changeSelectedChapter: (title: string) => void,
     fetchChatHistory: () => Promise<void>
     fetchChatResponse: (data: ChatPrompt) => Promise<void>
     updateBrainstormContentList: (data: ChatPrompt) => Promise<void>
@@ -21,9 +24,12 @@ interface ChatContext {
 
 const initialState: ChatContext = {
     chatBrainstormContentList: [],
-    fetchChatBrainstormContentStatus: 'idle',
-    changeTab: () => {},
-    changeChatDialog: () => {},
+    fetchChatHistoryStatus: 'idle',
+    chapterHistoryList: [],
+    changeTab: (id: number) => {},
+    changeChatDialog: (id: ChatMode) => {},
+    changeSelectedChapter: (title: string) => {},
+    selectedChapter: defaultSelectedChapterHistory,
     storySummary: longGeneratedText,
     tabID: 0,
     chatMode: ChatMode.STORY,
@@ -41,28 +47,33 @@ interface ChatProviderProps {
 
 export const ChatProvider: React.FC<ChatProviderProps> = ({children}) => {
     const [chatBrainstormContentList, setChatBrainstormContentList] = useState<ChatPrompt[]>([])
-
-    const [fetchChatBrainstormContentStatus, setFetchChatBrainstormContentStatus] = useState<FetchStatusType>('idle');
-
+    const [chapterHistoryList, setchapterHistoryList] = useState<ChatHistory[]>([]);
+    const [fetchChatHistoryStatus, setFetchChatHistoryStatus] = useState<FetchStatusType>('idle');
+    const [selectedChapter, setSelectedChapter] = useState<ChatHistory>(defaultSelectedChapterHistory);
     const [tabID, setTabID] = useState(0);
     const [chatMode, setChatMode] = useState(ChatMode.STORY)
     const [storySummary, setStorySummary] = useState(longGeneratedText)
-    const [fetchStorySummaryStatus, setfetchStorySummaryStatus] = useState<FetchStatusType>('idle')
     const changeTab = (id: number) => {
         setTabID(id);
     }
     const changeChatDialog = (id: ChatMode) => {
         setChatMode(id);
     }
+    const changeSelectedChapter = (title: string) => {
+        setSelectedChapter(chapterHistoryList.find(chapter => chapter.title == title) ?? defaultSelectedChapterHistory);
+    }
     const fetchChatHistory = async () => {
-        setFetchChatBrainstormContentStatus('loading');
+        setFetchChatHistoryStatus('loading');
         const data = await getBrainstormHistory();
         if (data != null) {
-            setFetchChatBrainstormContentStatus('succeeded');
-            setChatBrainstormContentList([...data]);
+            setFetchChatHistoryStatus('succeeded');
+            setChatBrainstormContentList([...data.memory]);
+            setStorySummary(data.summary);
+            setchapterHistoryList(data.chapters);
+            console.log(data.chapters);
         }
         else {
-            setFetchChatBrainstormContentStatus('errored');
+            setFetchChatHistoryStatus('errored');
         }
     }
     const fetchChatResponse = async (data: ChatPrompt) => {
@@ -78,15 +89,15 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({children}) => {
             })
         }
         else setChatBrainstormContentList(prevState => [...prevState, data])
-        setFetchChatBrainstormContentStatus('loading');
+        setFetchChatHistoryStatus('loading');
         const result = await getBrainstormResponse(data);
         if (result != null){
             setChatBrainstormContentList(prevState => [...prevState, result])
-            fetchStorySummary();
-            setFetchChatBrainstormContentStatus('succeeded');
+            fetchChatHistory();
+            setFetchChatHistoryStatus('succeeded');
         }
         else {
-            setFetchChatBrainstormContentStatus('errored');
+            setFetchChatHistoryStatus('errored');
         }
     }
 
@@ -96,29 +107,24 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({children}) => {
     const updateBrainstormContentList = async (data: ChatPrompt) => {
         setChatBrainstormContentList(prevState => [...prevState, data]);
     }
-    const fetchStorySummary = async () => {
-        setfetchStorySummaryStatus('loading');
-        const result = await getBrainstormSummary();
-        setStorySummary(result);
-        setfetchStorySummaryStatus('succeeded');
-    }
     useEffect(() => {
         void (async () => {
-            const result = await getBrainstormHistory();
-            setChatBrainstormContentList(result);
-            fetchStorySummary();
+            fetchChatHistory();
         })()
     }, [])
     return (
         <Context.Provider
             value = {{
                 chatBrainstormContentList,
-                fetchChatBrainstormContentStatus,
+                fetchChatHistoryStatus,
                 tabID,
                 chatMode,
+                chapterHistoryList,
                 storySummary,
+                selectedChapter,
                 changeTab,
                 changeChatDialog,
+                changeSelectedChapter,
                 fetchChatHistory,
                 fetchChatResponse,
                 updateBrainstormContentList,

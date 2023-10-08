@@ -10,7 +10,7 @@ interface ChatContentListProps {
 }
 
 const ChatContentList = ({chatContentList} : ChatContentListProps) : JSX.Element => {
-    const { fetchChatBrainstormContentStatus: status} = useChatContext();
+    const { fetchChatHistoryStatus: status} = useChatContext();
     const bottomChatRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
         bottomChatRef.current?.scrollIntoView({ behavior: 'smooth'});

@@ -1,8 +1,8 @@
 import React from "react";
 import ChapterInfoCard from "./ChapterInfoCard";
-import { StoryProvider, useStoryContext } from '@/context/Story';
+import { useStoryContext } from '@/context/Story';
 
-const ChapterListComponent = (): JSX.Element => {
+const ChapterList = (): JSX.Element => {
     const {storyOutlineList} = useStoryContext();
     return (
             <div className="pb-12">
@@ -12,15 +12,6 @@ const ChapterListComponent = (): JSX.Element => {
                     ))
                 }
             </div>
-
-    )
-}
-
-const ChapterList = (): JSX.Element => {
-    return (
-        <StoryProvider>
-            <ChapterListComponent/>
-        </StoryProvider>
 
     )
 }

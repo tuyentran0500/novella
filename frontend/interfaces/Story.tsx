@@ -21,6 +21,7 @@ export const defaultChapterContent: ChapterContent = {
     content: '',
 }
 
+
 export const defaultChapterContentBlock: ChapterContentBlock = {
     title: '',
     description: '',

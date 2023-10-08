@@ -8,11 +8,11 @@ import { ChatTabID } from "@/interfaces/Chat";
 import ChapterSelect from "./ChapterSelect";
 interface SummaryCardProps {
     title: string,
-    content: string,
 }
-const ChapterSummaryCard = ({title, content} : SummaryCardProps): JSX.Element => {
+const ChapterSummaryCard = ({title} : SummaryCardProps): JSX.Element => {
     const [isFullMode, SetIsFullMode] = useState(false)
     const {confirmBrainstorm, changeTab} = useChatContext();
+    const { selectedChapter } = useChatContext();
     const startOutline = async () => {
         confirmBrainstorm();
         changeTab(ChatTabID.CHAPTERS);
@@ -29,7 +29,7 @@ const ChapterSummaryCard = ({title, content} : SummaryCardProps): JSX.Element =>
                     <Typography
                         style={{whiteSpace: 'pre-wrap'}}
                     >
-                        {content}
+                        {selectedChapter.summary}
                     </Typography>
                 </div>
             </Collapse>

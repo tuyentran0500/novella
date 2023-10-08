@@ -19,10 +19,17 @@ def getBrainstormHistoryById(id = ""):
     else:
         return chatCollection.find({"_id": id})['brainstorm']['memory']
     
+def getChapterHistoryById(id = ""):
+    chatCollection = db['chat']
+    if (id == ''):
+        return chatCollection.find_one()['chapters']
+    else:
+        return chatCollection.find({"_id": id})['chapters']
+    
 
 def summaryBrainstorm(messages):
     # summary the story so far
-    messages.append({"content": "Summary the story so far with title, detail story progress, divide the story into 4 acts.    ", "role" : "user"})
+    messages.append({"content": "Summary the story so far with title, detail story progress, divide the story into 4 acts.", "role" : "user"})
     summaryResponse = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=messages,
@@ -33,7 +40,11 @@ def summaryBrainstorm(messages):
 def getBrainstormResponse():
     messages = getBrainstormHistoryById(id = '')
     if request.method == 'GET':
-        return {"memory": messages, "summary": db['chat'].find_one()['brainstorm']['summary']}, 200
+        return {
+            "memory": messages, 
+            "summary": db['chat'].find_one()['brainstorm']['summary'],
+            "chapters": db['chat'].find_one()['chapters']
+            }, 200
     data = request.get_json()
     content = data['content']
     messages.append({"role": "user", "content": content})

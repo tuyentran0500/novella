@@ -1,6 +1,7 @@
 import axios from "axios"
 import { CHAT_BRAINSTORM_API } from "./endpoints"
 import { BrainstormHistoryResponse, ChatResponse } from "./models/chat"
+import {  ChatData } from "@/interfaces/Chat";
 
 export const getBrainstormResponse = async (data : ChatResponse): Promise<ChatResponse | null> => {
     try {
@@ -12,23 +13,12 @@ export const getBrainstormResponse = async (data : ChatResponse): Promise<ChatRe
     return null
   }
 
-export const getBrainstormHistory = async (): Promise<ChatResponse[]> => {
+export const getBrainstormHistory = async (): Promise<ChatData | null> => {
   try {
     const result = await axios<BrainstormHistoryResponse>(CHAT_BRAINSTORM_API);
     if (result.status === 200) {
-      return result.data.memory
+      return result.data
     }
   } catch (error) {}
-  return []
-}
-
-export const getBrainstormSummary = async (): Promise<string> => {
-  try {
-    const result = await axios<BrainstormHistoryResponse>(CHAT_BRAINSTORM_API);
-    if (result.status === 200) {
-      console.log(result);
-      return result.data.summary
-    }
-  } catch (error) {}
-  return ""
+  return null
 }
