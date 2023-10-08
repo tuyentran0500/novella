@@ -1,4 +1,4 @@
-import { getBrainstormHistory, getBrainstormResponse } from '@/api/chat';
+import { getBrainstormHistory, getBrainstormResponse, getChapterBrainstormResponse } from '@/api/chat';
 import { FetchStatusType } from '@/api/models/status';
 import { confirmBrainstormResponse } from '@/api/story';
 import { longGeneratedText } from '@/helper/helper';
@@ -18,6 +18,7 @@ interface ChatContext {
     changeSelectedChapter: (title: string) => void,
     fetchChatHistory: () => Promise<void>
     fetchChatResponse: (data: ChatPrompt) => Promise<void>
+    fetchChapterChatResponse: (data: ChatPrompt) => Promise<void>
     updateBrainstormContentList: (data: ChatPrompt) => Promise<void>
     confirmBrainstorm: () => Promise<void>,
 }
@@ -35,6 +36,7 @@ const initialState: ChatContext = {
     chatMode: ChatMode.STORY,
     fetchChatHistory: async () => {},
     fetchChatResponse: async (data: ChatPrompt) => {},
+    fetchChapterChatResponse: async (data: ChatPrompt) => {},
     updateBrainstormContentList: async (data: ChatPrompt) => {},
     confirmBrainstorm: async () => {},
 }
@@ -101,6 +103,25 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({children}) => {
         }
     }
 
+    const fetchChapterChatResponse = async (data: ChatPrompt) => {
+        setSelectedChapter(chapter => {
+            chapter.memory = [...chapter.memory, data];
+            return chapter;
+        })
+        setFetchChatHistoryStatus('loading');
+        const result = await getChapterBrainstormResponse(data, selectedChapter.title);
+        if (result != null){
+            setSelectedChapter(chapter => {
+                chapter.memory = [...chapter.memory, result];
+                return chapter;
+            })
+            setFetchChatHistoryStatus('succeeded');
+        }
+        else {
+            setFetchChatHistoryStatus('errored');
+        }
+    }
+
     const confirmBrainstorm = async (): Promise<void> => {
         const result = await confirmBrainstormResponse({"content" : storySummary, role: 'user', suggestionList: []});
     }
@@ -127,6 +148,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({children}) => {
                 changeSelectedChapter,
                 fetchChatHistory,
                 fetchChatResponse,
+                fetchChapterChatResponse,
                 updateBrainstormContentList,
                 confirmBrainstorm
             }}

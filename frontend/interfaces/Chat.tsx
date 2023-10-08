@@ -3,6 +3,7 @@ export interface ChatPrompt {
     suggestionList: string[]
     role: 'user' | 'assistant' | 'system' | 'suggestion',
     temperature?: number,
+    summary?: string,
 }
 
 export interface ChatHistory {

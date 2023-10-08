@@ -33,6 +33,7 @@ def brainstorming():
     )
     return {"content": response.choices[0].message.content, "role" : "assistant"}, 200
 
+
 @story_bp.route('/brainstorm-confirm', methods=['POST'])
 def confirmBrainstormIdea():
     data = request.get_json()
@@ -47,7 +48,10 @@ def confirmBrainstormIdea():
     db['chat'].update_one({}, {
         "$set": {
             "chapters": [{
-                "memory": [],
+                "memory": [
+                    {"role": "system", "content": "We are writing a story with an overall summary: " + content},
+                    {"role": "system", "content": "You are brainstorming for a chapter with a summary: " + chapter['description']}
+                ],
                 "summary": chapter["description"],
                 "title": chapter["title"]
             } for chapter in outlineList]

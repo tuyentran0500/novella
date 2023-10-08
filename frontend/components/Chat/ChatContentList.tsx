@@ -4,19 +4,26 @@ import React, { useEffect, useRef } from 'react'
 import LoadingChat from './LoadingChat'
 import EmptyChatSuggestion from './EmtyChatSuggestion'
 import ChatContent from './ChatContent'
+import { ChatMode } from '@/interfaces/Chat'
+import EmptyChapterSuggestion from './EmptyChapterSuggestion'
 
 interface ChatContentListProps {
     chatContentList : ChatResponse[]
 }
 
 const ChatContentList = ({chatContentList} : ChatContentListProps) : JSX.Element => {
-    const { fetchChatHistoryStatus: status} = useChatContext();
+    const { fetchChatHistoryStatus: status, chatMode} = useChatContext();
     const bottomChatRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
         bottomChatRef.current?.scrollIntoView({ behavior: 'smooth'});
     }, [status, chatContentList])
     if (chatContentList.length == 0){
-        return <EmptyChatSuggestion/>
+        if (chatMode == ChatMode.STORY){
+            return <EmptyChatSuggestion/>
+        }
+        if (chatMode == ChatMode.CHAPTERS){
+            return <EmptyChapterSuggestion/>
+        }
     }
     return (
         <div className='flex flex-col overflow-y-auto h-full pb-24 pt-36'>

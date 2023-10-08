@@ -6,7 +6,7 @@ import { ChatResponse } from "@/api/models/chat";
 import { useChatContext } from "@/context/Chat";
 import { ChatMode, ChatPrompt } from "@/interfaces/Chat";
 const ChatBar = (): JSX.Element => {
-    const { fetchChatResponse, chatMode, changeChatDialog } = useChatContext();
+    const { fetchChatResponse, fetchChapterChatResponse, chatMode, changeChatDialog } = useChatContext();
 
     const { handleSubmit, register, reset } = useForm<ChatResponse>({
         defaultValues: {
@@ -18,7 +18,12 @@ const ChatBar = (): JSX.Element => {
         changeChatDialog(event.target.value as ChatMode)
       };
     const handleChatPrompt = async (data: ChatPrompt) => {
-        await fetchChatResponse(data);
+        if (chatMode == ChatMode.STORY) {
+            await fetchChatResponse(data);
+        }
+        if (chatMode == ChatMode.CHAPTERS){
+            await fetchChapterChatResponse(data);
+        }
         reset({role: 'user', content: ''});
     }
     return (
