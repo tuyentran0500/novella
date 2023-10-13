@@ -33,6 +33,7 @@ def brainstorming():
     )
     return {"content": response.choices[0].message.content, "role" : "assistant"}, 200
 
+
 @story_bp.route('/brainstorm-confirm', methods=['POST'])
 def confirmBrainstormIdea():
     data = request.get_json()
@@ -44,12 +45,25 @@ def confirmBrainstormIdea():
             "chapters" : outlineList,
         }
     })
+    db['chat'].update_one({}, {
+        "$set": {
+            "chapters": [{
+                "memory": [
+                    {"role": "system", "content": "We are writing a story with an overall summary: " + content},
+                    {"role": "system", "content": "You are brainstorming for a chapter with a summary: " + chapter['description']}
+                ],
+                "summary": chapter["description"],
+                "title": chapter["title"]
+            } for chapter in outlineList]
+        }
+    })
+
     
     return {"content": "Succeed!", "role" : "system"}, 200
 
 def getOutlineStoryList(summary):
     content = "With the following idea:" + summary + "\n"
-    content += "Suggest an outline in the following format: ``` [ { \"title\" : \"\", \"description\": \"\", \"index\": number}]``` with index start from 0."
+    content += "Suggest an outline chapters in the following format: ``` [ { \"title\" : \"\", \"description\": \"\", \"index\": number}]``` with index start from 0."
     messages = [{"role": "user", "content": content}]
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",

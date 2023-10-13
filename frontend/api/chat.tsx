@@ -1,10 +1,11 @@
 import axios from "axios"
-import { CHAT_API } from "./endpoints"
-import { ChatHistoryResponse, ChatResponse } from "./models/chat"
+import { CHAT_BRAINSTORM_API, CHAT_CHAPTER_BRAINSTORM_API } from "./endpoints"
+import { BrainstormHistoryResponse, ChatResponse } from "./models/chat"
+import {  ChatData } from "@/interfaces/Chat";
 
-export const getChatResponse = async (data : ChatResponse): Promise<ChatResponse | null> => {
+export const getBrainstormResponse = async (data : ChatResponse): Promise<ChatResponse | null> => {
     try {
-      const result = await axios.post<ChatResponse>(CHAT_API, data);
+      const result = await axios.post<ChatResponse>(CHAT_BRAINSTORM_API, data);
       if (result.status === 200) {
         return result.data;
       }
@@ -12,12 +13,22 @@ export const getChatResponse = async (data : ChatResponse): Promise<ChatResponse
     return null
   }
 
-export const getChatHistory = async (): Promise<ChatResponse[]> => {
+export const getChapterBrainstormResponse = async (data : ChatResponse, title: string): Promise<ChatResponse | null> => {
   try {
-    const result = await axios<ChatHistoryResponse>(CHAT_API);
+    const result = await axios.post<ChatResponse>(CHAT_CHAPTER_BRAINSTORM_API, {...data, "title" : title});
     if (result.status === 200) {
-      return result.data.memory
+      return result.data;
     }
   } catch (error) {}
-  return []
+  return null
+}
+
+export const getBrainstormHistory = async (): Promise<ChatData | null> => {
+  try {
+    const result = await axios<BrainstormHistoryResponse>(CHAT_BRAINSTORM_API);
+    if (result.status === 200) {
+      return result.data
+    }
+  } catch (error) {}
+  return null
 }

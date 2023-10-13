@@ -1,6 +1,7 @@
 import { ChatResponse } from '@/api/models/chat';
 import { FetchStatusType } from '@/api/models/status';
 import { confirmBrainstormResponse, createChapter, getBrainstormHistory, getBrainstormResponse, getStoryOutline, saveChapterContent } from '@/api/story';
+import { defaultGenres } from '@/helper/helper';
 import { ChatPrompt } from '@/interfaces/Chat';
 import { ChapterContent, defaultChapterContent } from '@/interfaces/Story';
 import React, {useContext, useEffect, useState} from 'react';
@@ -14,19 +15,14 @@ interface StoryContext {
     fetchChatContentStatus: FetchStatusType,
     fetchSelectedChapterStatus: FetchStatusType,
     handleChatPrompt: (data: ChatPrompt) => Promise<void>;
+    changeCurrentChapter: (title : string) => Promise<void>;
     confirmBrainstorm: () => Promise<void>,
     generateChapterContent: () => Promise<void>,
     saveCurrentChapterContent: () => Promise<void>,
     updateChapterContent: (contentBlock: string, content: string) => void,
     handleWritingChapter: (data: ChapterContent) => Promise<void>,
 }
-const defaultGenres = [
-    'Drama',
-    'Fantasy',
-    'Mystery',
-    'Romance',
-    'Sci-fi',
-]
+
 const initialState: StoryContext = {
     chatContentList: [],
     storyOutlineList: [],
@@ -36,6 +32,7 @@ const initialState: StoryContext = {
     fetchChatContentStatus: 'idle',
     fetchSelectedChapterStatus: 'idle',
     handleChatPrompt: async (data: ChatPrompt) => {},
+    changeCurrentChapter: async (title : string) => {},
     confirmBrainstorm: async () => {},
     generateChapterContent: async () => {},
     updateChapterContent: (data: string, content: string) => {},
@@ -58,13 +55,18 @@ export const StoryProvider: React.FC<StoryProviderProps> = ({children}) => {
     const [fetchSelectedChapterStatus, setFetchSelectedChapterStatus] = useState<FetchStatusType>('idle');
 
     const genres = defaultGenres;
+    const changeCurrentChapter = async (title: string) => {
+        setFetchSelectedChapterStatus('loading');
+        const data = storyOutlineList.filter(chapter => chapter.title == title)[0];
+        setSelectedChapter(data);
+        setFetchSelectedChapterStatus('succeeded');
+    }
     const handleWritingChapter = async (data: ChapterContent) => {
         setFetchSelectedChapterStatus('loading');
         setSelectedChapter(data);
         setFetchSelectedChapterStatus('succeeded');
     }
     const handleChatPrompt = async (data: ChatResponse): Promise<void> => {
-        console.log(data);
         setFetchChatContentStatus('loading');
         const result = await getBrainstormResponse(data);
         if (result != null){
@@ -144,6 +146,7 @@ export const StoryProvider: React.FC<StoryProviderProps> = ({children}) => {
                 fetchChatContentStatus,
                 fetchSelectedChapterStatus,
                 handleChatPrompt,
+                changeCurrentChapter,
                 confirmBrainstorm,
                 handleWritingChapter,
                 generateChapterContent,
