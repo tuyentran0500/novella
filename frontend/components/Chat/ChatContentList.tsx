@@ -17,13 +17,13 @@ const ChatContentList = ({chatContentList} : ChatContentListProps) : JSX.Element
     useEffect(() => {
         bottomChatRef.current?.scrollIntoView({ behavior: 'smooth'});
     }, [status, chatContentList])
-    if (chatContentList.length == 0){
-        if (chatMode == ChatMode.STORY){
+    
+    if (chatContentList.length == 0 && chatMode == ChatMode.STORY){
             return <EmptyChatSuggestion/>
-        }
-        if (chatMode == ChatMode.CHAPTERS){
-            return <EmptyChapterSuggestion/>
-        }
+
+    }
+    if (chatContentList.length == 2 && chatMode == ChatMode.CHAPTERS){
+        return <EmptyChapterSuggestion/>
     }
     return (
         <div className='flex flex-col overflow-y-auto h-full pb-24 pt-36'>

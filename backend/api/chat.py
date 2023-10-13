@@ -65,16 +65,17 @@ def getBrainstormResponse():
         messages=messages,
         n=4
     )
+    suggestionList = [suggestionResponse.choices[i].message.content for i in range(4)]
     # Summary the story so far and save to db.
     summaryResponse = summaryBrainstorm(messages)
     db['chat'].update_one({}, { "$set": { "brainstorm.summary": summaryResponse.choices[0].message.content } })
-    suggestionList = [suggestionResponse.choices[i].message.content for i in range(4)]
 
     return {"content": response.choices[0].message.content, "role" : "assistant", "suggestionList" : suggestionList}, 200
 
 def updateStorySummaryByChapter(selectedChapter):
-    chapterHistory = getChapterHistoryById(id = "")
+    chapterHistory = db['story'].find_one({})['chapters']
     db['story'].update_one({}, { "$set": { "chapters": [{**chapter, "description": selectedChapter['summary']}  if chapter['title'] == selectedChapter['title'] else chapter for chapter in chapterHistory] } })
+
 @chat_bp.route("/chapter", methods=("GET", "POST"))
 def getChapterBrainstormResponse():
     data = request.get_json()

@@ -69,10 +69,9 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({children}) => {
         const data = await getBrainstormHistory();
         if (data != null) {
             setFetchChatHistoryStatus('succeeded');
-            setChatBrainstormContentList([...data.memory]);
+            if (chatBrainstormContentList.length == 0) setChatBrainstormContentList([...data.memory]);
             setStorySummary(data.summary);
             setchapterHistoryList(data.chapters);
-            console.log(data.chapters);
         }
         else {
             setFetchChatHistoryStatus('errored');
@@ -113,6 +112,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({children}) => {
         if (result != null){
             setSelectedChapter(chapter => {
                 chapter.memory = [...chapter.memory, result];
+                chapter.summary = result.summary || ""
                 return chapter;
             })
             setFetchChatHistoryStatus('succeeded');

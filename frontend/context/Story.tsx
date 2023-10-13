@@ -67,7 +67,6 @@ export const StoryProvider: React.FC<StoryProviderProps> = ({children}) => {
         setFetchSelectedChapterStatus('succeeded');
     }
     const handleChatPrompt = async (data: ChatResponse): Promise<void> => {
-        console.log(data);
         setFetchChatContentStatus('loading');
         const result = await getBrainstormResponse(data);
         if (result != null){
