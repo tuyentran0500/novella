@@ -3,6 +3,7 @@ import { FetchStatusType } from '@/api/models/status';
 import { confirmBrainstormResponse } from '@/api/story';
 import { longGeneratedText } from '@/helper/helper';
 import { ChatHistory, ChatMode, ChatPrompt, defaultSelectedChapterHistory } from '@/interfaces/Chat';
+import { ChapterContent } from '@/interfaces/Story';
 import React, {useContext, useEffect, useState} from 'react';
 
 interface ChatContext {
@@ -21,6 +22,7 @@ interface ChatContext {
     fetchChapterChatResponse: (data: ChatPrompt) => Promise<void>
     updateBrainstormContentList: (data: ChatPrompt) => Promise<void>
     confirmBrainstorm: () => Promise<void>,
+    changePageView: (selectedChapter: ChapterContent) => void,
 }
 
 const initialState: ChatContext = {
@@ -39,6 +41,7 @@ const initialState: ChatContext = {
     fetchChapterChatResponse: async (data: ChatPrompt) => {},
     updateBrainstormContentList: async (data: ChatPrompt) => {},
     confirmBrainstorm: async () => {},
+    changePageView: (selectedChapter: ChapterContent) => {},
 }
 
 const Context = React.createContext<ChatContext>(initialState);
@@ -63,6 +66,11 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({children}) => {
     }
     const changeSelectedChapter = (title: string) => {
         setSelectedChapter(chapterHistoryList.find(chapter => chapter.title == title) ?? defaultSelectedChapterHistory);
+    }
+    const changePageView = (selectedChapter : ChapterContent) => {
+        setTabID(0);
+        setChatMode(ChatMode.CHAPTERS);
+        setSelectedChapter(chapterHistoryList.find(chapter => chapter.title == selectedChapter.title) ?? defaultSelectedChapterHistory);
     }
     const fetchChatHistory = async () => {
         setFetchChatHistoryStatus('loading');
@@ -150,7 +158,8 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({children}) => {
                 fetchChatResponse,
                 fetchChapterChatResponse,
                 updateBrainstormContentList,
-                confirmBrainstorm
+                confirmBrainstorm,
+                changePageView,
             }}
         >
             {children}
