@@ -1,7 +1,7 @@
 import axios from "axios"
-import { BRAINSTORMING_API, BRAINSTORMING_CONFIRM_API, IMPROVE_API, OUTLINE_API, SAVE_CHAPTER_API, WRITING_API } from "./endpoints"
+import { BRAINSTORMING_API, BRAINSTORMING_CONFIRM_API, IMPROVE_API, OUTLINE_API, REVIEW_API, SAVE_CHAPTER_API, WRITING_API } from "./endpoints"
 import {  ChatResponse } from "./models/chat"
-import { CreateChapterResponse, ImproveChapterResponse, OutlineStoryResponse } from "./models/story";
+import { CreateChapterResponse, ImproveChapterResponse, OutlineStoryResponse, ReviewChapterResponse } from "./models/story";
 import { ChapterContent } from "@/interfaces/Story";
 import { getintialContent } from "@/helper/editor";
 
@@ -74,6 +74,17 @@ export const improveText = async (data: ChapterContent): Promise<ImproveChapterR
 export const saveChapterContent = async (data: ChapterContent): Promise<CreateChapterResponse | null> => {
   try {
     const result = await axios.post<CreateChapterResponse>(SAVE_CHAPTER_API, data)
+    if (result.status === 200){
+      return result.data
+    }
+  } catch (error) {}
+  return null
+}
+
+// review story
+export const reviewStory = async (): Promise<ReviewChapterResponse | null> => {
+  try {
+    const result = await axios<CreateChapterResponse>(REVIEW_API)
     if (result.status === 200){
       return result.data
     }

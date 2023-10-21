@@ -18,6 +18,7 @@ const ChatBox = (): JSX.Element => {
             <ChatNavbar/>
             {tabID == ChatTabID.BRAINSTORM && <BrainstormTab/>}
             {tabID == ChatTabID.CHAPTERS && <ChapterTab/> }
+
         </div>
     )
 }

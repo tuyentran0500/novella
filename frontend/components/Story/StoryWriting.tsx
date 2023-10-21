@@ -12,12 +12,14 @@ const StoryWriting = (): JSX.Element => {
                 <StoryOutline/>
             </div>
             {selectedChapter.index != -1 && 
-                <ChapterWriting/>
+                <div className="grow">
+                <ChapterWriting />
+                </div>
             }
             {showChat && 
-            <div className="shadow-lg grow">
+            <div className="ml-6 max-w-4xl">
                 <Chat/>
-            </div>    
+            </div>
             }
         </div>
     )

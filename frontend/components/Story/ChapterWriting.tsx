@@ -1,6 +1,6 @@
 "use client"; // this registers <Editor> as a Client Component
 import { useStoryContext } from "@/context/Story";
-import { Button, Card, CardActions, CardMedia, IconButton, Tooltip } from "@mui/material";
+import { AppBar, Button, Card, CardActions, CardMedia, IconButton, Tooltip } from "@mui/material";
 import React, { useState } from "react";
 import EditChapterWriting from "./EditChapterWriting";
 import { BlockNoteView } from "@blocknote/react";
@@ -77,6 +77,7 @@ const ChapterWriting = (): JSX.Element => {
             <div className="pb-8">
                 <BlockNoteView editor={editor}/>
             </div>
+
         </Card>
     )
 }

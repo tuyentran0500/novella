@@ -1,5 +1,6 @@
 from flask import Blueprint,request
 import os
+from novellamemory.novellaGPT import NovellaGPT
 import openai
 from pymongo import MongoClient
 import json
@@ -125,10 +126,12 @@ def getContentBlock(data):
 @story_bp.route('/writing', methods=['POST'])
 def chapterWriting():
     data = request.get_json()
+    print("Print Data:", data)
     summary = getStoryProgress(data['index'])
-    content = "Write an chapter based on the following description: "
+    content = "Based on the summary of the previous chapter as: " + summary + "."
+    content += "Write an chapter based on the following description: "
     content += data['description']
-    content += ". With this title:" + data['title'] + "\n And the summary of previous chapter: " + summary
+    content += ". With this title:" + data['title']
 
     messages = [
         {"role": "system", "content": "Imagine that you are a master novel writer"},
@@ -244,3 +247,10 @@ def create_cover_image():
         with open(os.path.join(folder_path, "cover.png"), "wb") as f: # replace this if running locally, to where you store the cover file
             f.write(base64.b64decode(image["base64"]))
     return {"content": "Success", "role" : "system"}, 200
+
+@story_bp.route("/review", methods=["GET"])
+def getBrainstormResponse():
+    chat = NovellaGPT()
+    response = chat.predict("Review the current story, to see if there is any potential logic problem within the story")
+
+    return {"content": response, "role" : "assistant"}, 200
