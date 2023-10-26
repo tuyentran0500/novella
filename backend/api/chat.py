@@ -21,6 +21,7 @@ def getBrainstormHistoryById(id = ""):
 
 def getChapterBrainstormByTitle(title, id = ""):
     chapterHistory = getChapterHistoryById(id = "")
+    print("title:", title)
     selectedChapter = list(filter(lambda item: item["title"] == title, chapterHistory))[0]
     return chapterHistory, selectedChapter
 def getChapterHistoryById(id = ""):

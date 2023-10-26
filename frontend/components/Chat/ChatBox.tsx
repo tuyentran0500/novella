@@ -1,5 +1,5 @@
 import React from "react"
-import { ChatProvider, useChatContext } from "@/context/Chat"
+import { useChatContext } from "@/context/Chat"
 import ChatNavbar from "./ChatNavbar"
 import ChapterTab from "./ChapterTab"
 import { ChatTabID } from "@/interfaces/Chat"
@@ -7,9 +7,7 @@ import BrainstormTab from "./BrainstormTab"
 
 export const Chat: React.FC<{}> = () => {
     return (
-        <ChatProvider>
-            <ChatBox />
-        </ChatProvider>
+        <ChatBox />
     )
 }
 const ChatBox = (): JSX.Element => {
@@ -20,6 +18,7 @@ const ChatBox = (): JSX.Element => {
             <ChatNavbar/>
             {tabID == ChatTabID.BRAINSTORM && <BrainstormTab/>}
             {tabID == ChatTabID.CHAPTERS && <ChapterTab/> }
+
         </div>
     )
 }

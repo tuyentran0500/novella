@@ -14,6 +14,7 @@ interface StoryContext {
     fetchStoryOutlineStatus: FetchStatusType,
     fetchChatContentStatus: FetchStatusType,
     fetchSelectedChapterStatus: FetchStatusType,
+    showChat: boolean,
     handleChatPrompt: (data: ChatPrompt) => Promise<void>;
     changeCurrentChapter: (title : string) => Promise<void>;
     confirmBrainstorm: () => Promise<void>,
@@ -21,6 +22,8 @@ interface StoryContext {
     saveCurrentChapterContent: () => Promise<void>,
     updateChapterContent: (contentBlock: string, content: string) => void,
     handleWritingChapter: (data: ChapterContent) => Promise<void>,
+    changeShowChat: () => void;
+    fetchStoryOutline: () => Promise<void>,
 }
 
 const initialState: StoryContext = {
@@ -31,6 +34,7 @@ const initialState: StoryContext = {
     fetchStoryOutlineStatus: 'idle',
     fetchChatContentStatus: 'idle',
     fetchSelectedChapterStatus: 'idle',
+    showChat: false,
     handleChatPrompt: async (data: ChatPrompt) => {},
     changeCurrentChapter: async (title : string) => {},
     confirmBrainstorm: async () => {},
@@ -38,6 +42,9 @@ const initialState: StoryContext = {
     updateChapterContent: (data: string, content: string) => {},
     handleWritingChapter: async (data: ChapterContent) => {},
     saveCurrentChapterContent: async () => {},
+    changeShowChat: () => {},
+    fetchStoryOutline: async () => {},
+
 }
 
 const Context = React.createContext<StoryContext>(initialState);
@@ -48,6 +55,7 @@ interface StoryProviderProps {
 
 export const StoryProvider: React.FC<StoryProviderProps> = ({children}) => {
     const [chatContentList, setChatContentList] = useState<ChatPrompt[]>([])
+    const [showChat, setshowChat] = useState<boolean>(false)
     const [storyOutlineList, setStoryOutlineList] = useState<ChapterContent[]>([]);
     const [fetchChatContentStatus, setFetchChatContentStatus] = useState<FetchStatusType>('idle');
     const [fetchStoryOutlineStatus, setFetchStoryOutlineStatus] = useState<FetchStatusType>('idle');
@@ -55,6 +63,9 @@ export const StoryProvider: React.FC<StoryProviderProps> = ({children}) => {
     const [fetchSelectedChapterStatus, setFetchSelectedChapterStatus] = useState<FetchStatusType>('idle');
 
     const genres = defaultGenres;
+    const changeShowChat = () => {
+        setshowChat(prev => !prev);
+    }
     const changeCurrentChapter = async (title: string) => {
         setFetchSelectedChapterStatus('loading');
         const data = storyOutlineList.filter(chapter => chapter.title == title)[0];
@@ -145,6 +156,8 @@ export const StoryProvider: React.FC<StoryProviderProps> = ({children}) => {
                 fetchStoryOutlineStatus,
                 fetchChatContentStatus,
                 fetchSelectedChapterStatus,
+                showChat,
+                changeShowChat,
                 handleChatPrompt,
                 changeCurrentChapter,
                 confirmBrainstorm,
@@ -152,6 +165,7 @@ export const StoryProvider: React.FC<StoryProviderProps> = ({children}) => {
                 generateChapterContent,
                 saveCurrentChapterContent,
                 updateChapterContent,
+                fetchStoryOutline,
                 genres,
             }}
         >

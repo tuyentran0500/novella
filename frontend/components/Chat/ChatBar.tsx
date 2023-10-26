@@ -27,7 +27,7 @@ const ChatBar = (): JSX.Element => {
         reset({role: 'user', content: ''});
     }
     return (
-        <AppBar position="fixed" className="bg-white" sx={{ top: 'auto', bottom: 0 }}>
+        <AppBar position="sticky" className="bg-white" sx={{ top: 'auto', bottom: 0 }}>
             <form onSubmit={handleSubmit(handleChatPrompt)}>
                 <div className="flex p-2">
                     <Select

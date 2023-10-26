@@ -4,5 +4,8 @@ export type OutlineStoryResponse = OutlinePrompt;
 
 export type CreateChapterResponse = ChapterContent;
 
+export type ReviewChapterResponse = ChapterContent;
+
+
 export type ImproveChapterResponse = ChapterContentBlock;
 

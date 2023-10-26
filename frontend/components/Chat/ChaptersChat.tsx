@@ -7,7 +7,7 @@ const ChaptersChat = (): JSX.Element => {
     const {selectedChapter } = useChatContext();
     return (
         <div className='flex flex-col'> 
-            <AppBar position="fixed" className="bg-white text-black" sx={{ top: 96, bottom: 'auto' }}>
+            <AppBar position="sticky" className="bg-white text-black" sx={{ top: 96, bottom: 'auto' }}>
                 <ChapterSummaryCard title="Chapter Summary"/>
             </AppBar>
             <div className="pt-16">

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import EditNoteOutlinedIcon from '@mui/icons-material/EditNoteOutlined';
 export const WritingAppBar = (): JSX.Element => {
     return (
-        <AppBar position="fixed" className="bg-white" sx={{ top: 'auto', bottom: 0 }}>
+        <AppBar position="sticky" className="bg-white" sx={{ top: 'auto', bottom: 0 }}>
             <div className="flex justify-center p-2">
                 <Link href='/story/'>
                     <Button className="w-44 text-black bg-neural-400 shadow-lg shadow-gray-400">
