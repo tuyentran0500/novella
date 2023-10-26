@@ -23,6 +23,7 @@ interface StoryContext {
     updateChapterContent: (contentBlock: string, content: string) => void,
     handleWritingChapter: (data: ChapterContent) => Promise<void>,
     changeShowChat: () => void;
+    fetchStoryOutline: () => Promise<void>,
 }
 
 const initialState: StoryContext = {
@@ -42,6 +43,8 @@ const initialState: StoryContext = {
     handleWritingChapter: async (data: ChapterContent) => {},
     saveCurrentChapterContent: async () => {},
     changeShowChat: () => {},
+    fetchStoryOutline: async () => {},
+
 }
 
 const Context = React.createContext<StoryContext>(initialState);
@@ -162,6 +165,7 @@ export const StoryProvider: React.FC<StoryProviderProps> = ({children}) => {
                 generateChapterContent,
                 saveCurrentChapterContent,
                 updateChapterContent,
+                fetchStoryOutline,
                 genres,
             }}
         >

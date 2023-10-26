@@ -73,8 +73,7 @@ const EditChapterWriting = ({onEdit, editor} : EditChapterWritngProps): JSX.Elem
                 <div className="font-bold mb-2 text-lg">Reviews</div>
                 <div>{reviewContent}
                 </div>
-                <p> Score: 9/10</p>
-            </Box>
+                </Box>
         </Modal>
     </Card>
     );

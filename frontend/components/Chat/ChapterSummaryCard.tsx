@@ -6,15 +6,18 @@ import BorderColorIcon from '@mui/icons-material/BorderColor';
 import { useChatContext } from "@/context/Chat";
 import { ChatTabID } from "@/interfaces/Chat";
 import ChapterSelect from "./ChapterSelect";
+import { useStoryContext } from "@/context/Story";
 interface SummaryCardProps {
     title: string,
 }
 const ChapterSummaryCard = ({title} : SummaryCardProps): JSX.Element => {
     const [isFullMode, SetIsFullMode] = useState(false)
-    const {confirmBrainstorm, changeTab} = useChatContext();
+    const { confirmBrainstorm, changeTab } = useChatContext();
     const { selectedChapter } = useChatContext();
+    const { fetchStoryOutline } = useStoryContext();
     const startOutline = async () => {
-        confirmBrainstorm();
+        await confirmBrainstorm();
+        await fetchStoryOutline();
         changeTab(ChatTabID.CHAPTERS);
     }
     return (

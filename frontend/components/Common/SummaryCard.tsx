@@ -6,6 +6,7 @@ import { Collapse, IconButton, Tooltip, Typography } from "@mui/material";
 import BorderColorIcon from '@mui/icons-material/BorderColor';
 import { useChatContext } from "@/context/Chat";
 import { ChatTabID } from "@/interfaces/Chat";
+import { useStoryContext } from "@/context/Story";
 interface SummaryCardProps {
     title: string,
     content: string,
@@ -13,8 +14,10 @@ interface SummaryCardProps {
 const SummaryCard = ({title, content} : SummaryCardProps): JSX.Element => {
     const [isFullMode, SetIsFullMode] = useState(false)
     const {confirmBrainstorm, changeTab} = useChatContext();
+    const { fetchStoryOutline } = useStoryContext();
     const startOutline = async () => {
-        confirmBrainstorm();
+        await confirmBrainstorm();
+        await fetchStoryOutline();
         changeTab(ChatTabID.CHAPTERS);
     }
     return (
