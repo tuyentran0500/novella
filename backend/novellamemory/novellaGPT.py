@@ -1,20 +1,30 @@
 from langchain import ConversationChain
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts.prompt import PromptTemplate
+from langchain.memory import ConversationKGMemory, ConversationEntityMemory
+from langchain.llms import OpenAI
+from pymongo import MongoClient
+from langchain.memory.prompt import ENTITY_MEMORY_CONVERSATION_TEMPLATE
 from novellamemory.memory import NovellaStoryMemory
 import os
+
+
+client = MongoClient('mongodb://localhost:27017/')
+db = client['novella']
+storyCollection = db['story']
 
 class NovellaGPT():
     llm: ChatOpenAI
     template: PromptTemplate
     conversation: ConversationChain
+    conversation_with_kg: ConversationChain
     def __init__(self):
         self.llm = ChatOpenAI(temperature=0)
         print(os.getenv('NOVELLA_API_BASE'))
         print("API:", self.llm.openai_api_key)
         print("API_BASE:", self.llm.openai_api_base)
 
-        self.template = """The following is a friendly conversation between a human and an AI. The AI is talkative and provides lots of specific details from its context. If the AI does not know the answer to a question, it truthfully says it does not know. You are provided with information about entities the Human mentions, if relevant.
+        self.template = """THis is a following story information of a writer.
 
         Relevant entity information:
         {entities}
@@ -26,8 +36,23 @@ class NovellaGPT():
         self.conversation = ConversationChain(
             llm=self.llm, prompt=self.prompt, verbose=True, memory=NovellaStoryMemory()
         )
+
+        ## Use of knowledge graph.
+        llm = ChatOpenAI(temperature=0)
+        memory = ConversationEntityMemory(llm=self.llm)
+        doc = storyCollection.find_one({})['chapters']
+        for item in doc:
+            if item.get('title', '') != '' and item.get('content', '') != '':
+                memory.save_context({"input" : item.get('title', '')}, {"output" : item.get('content', '')})
+        print(memory.load_memory_variables({"input" : "What is the story is about?"}))
+        self.conversation_with_kg = ConversationChain(
+            llm=llm, prompt=ENTITY_MEMORY_CONVERSATION_TEMPLATE, verbose=True, memory=memory
+        )
+
     def predict(self, input: str):
         return self.conversation.predict(input = input)
+    def predict_with_kg(self, input: str):
+        return self.conversation_with_kg.predict(input = input)
     
 if __name__ == '__main__':
     gpt = NovellaGPT()
