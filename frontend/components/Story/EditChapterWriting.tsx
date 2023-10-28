@@ -2,7 +2,7 @@ import { BlockNoteView, useBlockNote } from "@blocknote/react";
 import "@blocknote/core/style.css";
 import React, { useState } from "react";
 import { useStoryContext } from "@/context/Story";
-import { AppBar, Card, CardActions, CardMedia, IconButton, Modal, Tooltip } from "@mui/material";
+import { AppBar, Card, CardActions, CardMedia, IconButton, Modal, Tab, Tabs, Tooltip } from "@mui/material";
 import { BlockNoteEditor } from "@blocknote/core";
 import ContentPasteSearchIcon from '@mui/icons-material/ContentPasteSearch';
 import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
@@ -10,14 +10,16 @@ import LightbulbOutlinedIcon from '@mui/icons-material/LightbulbOutlined';
 import { Box } from '@mui/system';
 import { reviewStory } from "@/api/story";
 import ChapterWritingNavbar from "./ChapterWritingNavbar";
+import { ReviewContent } from "@/interfaces/Story";
 interface EditChapterWritngProps {
     onEdit: () => void,
     editor: BlockNoteEditor<any> | null,
 }
 const EditChapterWriting = ({onEdit, editor} : EditChapterWritngProps): JSX.Element => {
-    const {saveCurrentChapterContent, updateChapterContent} = useStoryContext();
+    const {saveCurrentChapterContent, updateChapterContent, selectedChapter} = useStoryContext();
+    const [reviewTab, setReviewTab] = useState(0);
     const [showReview, setshowReview] = useState(false)
-    const [reviewContent, setReviewContent] = useState("");
+    const [reviewContent, setReviewContent] = useState<ReviewContent>();
     editor?.onEditorContentChange(async () => {
         const blocks = editor.topLevelBlocks;
         const blockContent = JSON.stringify(blocks);
@@ -29,11 +31,14 @@ const EditChapterWriting = ({onEdit, editor} : EditChapterWritngProps): JSX.Elem
         await saveCurrentChapterContent();
         onEdit();
     }
+    const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+        setReviewTab(newValue);
+    };
     const onReview = async () => {
         setshowReview(true);
-        const result = await reviewStory();
+        const result = await reviewStory(selectedChapter);
         if (result != null){
-            setReviewContent(result.content || "");
+            setReviewContent(result);
         }
     }
     return (
@@ -51,9 +56,14 @@ const EditChapterWriting = ({onEdit, editor} : EditChapterWritngProps): JSX.Elem
         >
             <Box className="bg-white p-4 rounded-xl max-w-md">
                 <div className="font-bold mb-2 text-lg">Reviews</div>
-                <div>{reviewContent}
-                </div>
-                </Box>
+                <Tabs value = {reviewTab} onChange={handleChange}>
+                    <Tab value={0} label="Chapter Review"/>
+                    <Tab value={1} label="Story Review"/>
+                </Tabs>
+                {reviewTab == 0 && <div>{reviewContent?.chapterReview}</div>}
+                {reviewTab == 1 && <div>{reviewContent?.summaryReview}</div>}
+
+            </Box>
         </Modal>
     </Card>
     );
