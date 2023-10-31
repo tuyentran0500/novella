@@ -6,6 +6,8 @@ from langchain.llms import OpenAI
 from pymongo import MongoClient
 from langchain.memory.prompt import ENTITY_MEMORY_CONVERSATION_TEMPLATE
 from novellamemory.memory import NovellaStoryMemory
+# from novellamemory.chain import NovellaSummarizationChain
+
 import os
 
 
@@ -18,6 +20,7 @@ class NovellaGPT():
     template: PromptTemplate
     conversation: ConversationChain
     conversation_with_kg: ConversationChain
+    # chain: NovellaSummarizationChain
     def __init__(self):
         self.llm = ChatOpenAI(temperature=0)
         print(os.getenv('NOVELLA_API_BASE'))
@@ -40,20 +43,23 @@ class NovellaGPT():
         ## Use of knowledge graph.
         llm = ChatOpenAI(temperature=0)
         memory = ConversationEntityMemory(llm=self.llm)
-        doc = storyCollection.find_one({})['chapters']
-        for item in doc:
-            if item.get('title', '') != '' and item.get('content', '') != '':
-                memory.save_context({"input" : item.get('title', '')}, {"output" : item.get('content', '')})
-        print(memory.load_memory_variables({"input" : "What is the story is about?"}))
+
         self.conversation_with_kg = ConversationChain(
             llm=llm, prompt=ENTITY_MEMORY_CONVERSATION_TEMPLATE, verbose=True, memory=memory
         )
+        # self.chain = NovellaSummarizationChain()
 
     def predict(self, input: str):
         return self.conversation.predict(input = input)
-    def predict_with_kg(self, input: str):
+    def predict_with_kg(self, input: str, index: int):
+        doc = storyCollection.find_one({})['chapters']
+        for item in doc:
+            if item.get('title', '') != '' and item.get('content', '') != '':
+                self.conversation_with_kg.  memory.save_context({"input" : item.get('title', '')}, {"output" : item.get('description', '')})
+        self.conversation_with_kg.memory.save_context({"input" : doc[index].get('title', '')}, {"output" : doc[index].get('content', '')})
         return self.conversation_with_kg.predict(input = input)
-    
+    # def predict_with_large_text(self):
+    #     return self.chain.run()
 if __name__ == '__main__':
     gpt = NovellaGPT()
     result = gpt.predict("Could you cite all of chapter 1 content?")

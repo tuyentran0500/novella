@@ -27,7 +27,7 @@ class NovellaStoryMemory(BaseMemory, BaseModel):
         # Get the story input
         doc = storyCollection.find_one({})['chapters']
         # Extract known information about chapters, if they exist.
-        chapters = [item.get('content', '') for item in doc]
+        chapters = [item.get('description', '') for item in doc]
         # Return combined information about chapters to put into context.
         return {self.memory_key: "\n".join(chapters)}
     def save_context(self, inputs: Dict[str, Any], outputs: Dict[str, str]) -> None:
