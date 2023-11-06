@@ -4,6 +4,9 @@ from langchain.chains import ReduceDocumentsChain, MapReduceDocumentsChain
 from langchain.chat_models import ChatOpenAI
 from langchain.chains.llm import LLMChain
 from pymongo import MongoClient
+from langchain.prompts.prompt import PromptTemplate
+from langchain.chains.combine_documents.stuff import StuffDocumentsChain
+from langchain.document_loaders.mongodb import MongodbLoader
 
 client = MongoClient('mongodb://localhost:27017/')
 db = client['novella']
@@ -14,10 +17,15 @@ class NovellaSummarizationChain():
     map_reduce_chain: LLMChain
     split_docs: []
     def __init__(self):
-        doc = storyCollection.find_one({})['chapters']
+        loader = MongodbLoader(
+            connection_string="mongodb://localhost:27017/",
+            db_name="novella",
+            collection_name="chat",
+            filter_criteria={},
+        )
+        docs = loader.load()
         # Extract known information about chapters, if they exist.
-        docs = [item.get('content', '') for item in doc]
-        llm = ChatOpenAI(temperature=0)
+        llm = ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo-16k")
         map_template = """The following is a set of chapters
         {docs}
 
@@ -68,7 +76,7 @@ class NovellaSummarizationChain():
             chunk_size=1000, chunk_overlap=0
         )
         self.split_docs = text_splitter.split_documents(docs)
-    def run():
+    def run(self):
         self.map_reduce_chain.run(self.split_docs)
 
 

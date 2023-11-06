@@ -1,4 +1,5 @@
-from langchain import ConversationChain
+# from chain import NovellaSummarizationChain
+from langchain.chains import ConversationChain
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts.prompt import PromptTemplate
 from langchain.memory import ConversationKGMemory, ConversationEntityMemory
@@ -6,9 +7,8 @@ from langchain.llms import OpenAI
 from pymongo import MongoClient
 from langchain.memory.prompt import ENTITY_MEMORY_CONVERSATION_TEMPLATE
 from novellamemory.memory import NovellaStoryMemory
-# from novellamemory.chain import NovellaSummarizationChain
+from novellamemory.chain import NovellaSummarizationChain
 
-import os
 
 
 client = MongoClient('mongodb://localhost:27017/')
@@ -23,7 +23,6 @@ class NovellaGPT():
     # chain: NovellaSummarizationChain
     def __init__(self):
         self.llm = ChatOpenAI(temperature=0)
-        print(os.getenv('NOVELLA_API_BASE'))
         print("API:", self.llm.openai_api_key)
         print("API_BASE:", self.llm.openai_api_base)
 
