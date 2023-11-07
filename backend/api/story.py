@@ -6,11 +6,10 @@ from pymongo import MongoClient
 import json
 import requests
 import base64
-
 openai.api_key = os.getenv('NOVELLA_API_KEY')
 openai.api_base = os.getenv('NOVELLA_API_BASE')
 story_bp = Blueprint('story', __name__)
-client = MongoClient('mongodb://localhost:27017/')
+client = MongoClient(os.getenv('DATABASE_URL'))
 db = client['novella']
 storyCollection = db['story']
 

@@ -3,10 +3,11 @@ import os
 import openai
 from pymongo import MongoClient
 from novellamemory.novellaGPT import NovellaGPT
+import os
 
 chat_bp = Blueprint('chat', __name__)
 
-client = MongoClient('mongodb://localhost:27017/')
+client = MongoClient(os.getenv('DATABASE_URL'))
 db = client['novella']
 
 openai.api_key = os.getenv('NOVELLA_API_KEY')

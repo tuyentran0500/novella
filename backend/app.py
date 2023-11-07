@@ -5,7 +5,8 @@ from pymongo import MongoClient
 from api.thinkgpt import thinkgpt_bp
 from api.chat import chat_bp
 from api.story import story_bp
-client = MongoClient('mongodb://localhost:27017/')
+import os
+client = MongoClient(os.getenv('DATABASE_URL'))
 db = client['novella']
 
 app = Flask(__name__)
