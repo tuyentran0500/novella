@@ -1,0 +1,40 @@
+version: "3.9"
+services:
+  ui:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    container_name: novella-ui
+    networks:
+      - novella-stack-net
+    depends_on:
+      - api
+    stdin_open: true
+    tty: true
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      FLASK_APP: ${FLASK_APP}
+      NOVELLA_API_KEY: ${NOVELLA_API_KEY}
+      NOVELLA_API_BASE: ${NOVELLA_API_BASE}
+      NOVELLA_DRAWING_API_KEY: ${NOVELLA_DRAWING_API_KEY}
+      DATABASE_URL: ${DATABASE_URL}
+    ports:
+    - 5000:5000
+    container_name: novella-api
+    networks:
+      - novella-stack-net
+    # volumes:
+    #   - api_public:/usr/app/public
+
+networks:
+  novella-stack-net:
+    driver: bridge
+# volumes:
+#   api_public:
+#     driver: local

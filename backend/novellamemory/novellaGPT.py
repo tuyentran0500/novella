@@ -1,4 +1,4 @@
-from langchain import ConversationChain
+from langchain.chains import ConversationChain
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts.prompt import PromptTemplate
 from novellamemory.memory import NovellaStoryMemory
