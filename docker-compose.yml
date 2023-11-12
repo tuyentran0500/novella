@@ -4,6 +4,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    image: tuyentran0500/novella-ui:latest
     ports:
       - 3000:3000
     container_name: novella-ui
@@ -18,6 +19,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    image: tuyentran0500/novella-api:latest
     environment:
       FLASK_APP: ${FLASK_APP}
       NOVELLA_API_KEY: ${NOVELLA_API_KEY}

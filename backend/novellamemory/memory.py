@@ -2,8 +2,8 @@ from langchain.schema import BaseMemory
 from pydantic import BaseModel
 from typing import List, Dict, Any
 from pymongo import MongoClient
-
-client = MongoClient('mongodb://localhost:27017/')
+import os 
+client = MongoClient(os.getenv('DATABASE_URL'))
 db = client['novella']
 storyCollection = db['story']
 class NovellaStoryMemory(BaseMemory, BaseModel):
