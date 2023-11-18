@@ -19,10 +19,9 @@ class NovellaGPT():
     conversation: ConversationChain
     conversation_with_kg: ConversationChain
     def __init__(self):
-        self.llm = ChatOpenAI(temperature=0)
+        self.llm = ChatOpenAI(temperature=0, openai_api_key=os.getenv('NOVELLA_API_KEY'))
         print(os.getenv('NOVELLA_API_BASE'))
         print("API:", self.llm.openai_api_key)
-        print("API_BASE:", self.llm.openai_api_base)
 
         self.template = """THis is a following story information of a writer.
 

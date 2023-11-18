@@ -250,11 +250,11 @@ def create_cover_image():
 @story_bp.route("/review", methods=["POST"])
 def getReviewStory():
     data = request.get_json()
-    # chat = NovellaGPT()
-    # summaryResponse = chat.predict("Please analyze the cohesion of the story I've written. Check for repetitiveness between these chapters, ensuring that there is no redundant information or duplicated events, logical flow, and coherence between sentences and paragraphs. Ensure that the plot progresses smoothly and the events are connected logically. Pay attention to the consistency in character descriptions and actions. Look out for any inconsistencies or gaps in the storyline. Additionally, assess the overall readability and engagement factor of the narrative. Provide feedback on how well the story holds together and suggest improvements where necessary. Additionally, please provide an overall score for the story, considering its coherence, flow, character development, and engagement. ")
-    # chapterResponse = chat.predict("Please review the chapter: " + str(data['title']) + " by considering the writing style, cohension, and engaging.")
-    summaryResponse = "Hello"
-    chapterResponse = "Welcome"
+    chat = NovellaGPT()
+    summaryResponse = chat.predict_with_kg("Please analyze the cohesion of the story I've written. Check for repetitiveness between these chapters, ensuring that there is no redundant information or duplicated events, logical flow, and coherence between sentences and paragraphs. Ensure that the plot progresses smoothly and the events are connected logically. Pay attention to the consistency in character descriptions and actions. Look out for any inconsistencies or gaps in the storyline. Additionally, assess the overall readability and engagement factor of the narrative. Provide feedback on how well the story holds together and suggest improvements where necessary. Additionally, please provide an overall score for the story, considering its coherence, flow, character development, and engagement. ")
+    chapterResponse = chat.predict("Please review the chapter: " + str(data['title']) + " by considering the writing style, cohension, and engaging.")
+    # summaryResponse = "Hello"
+    # chapterResponse = "Welcome"
     return {"summaryReview": summaryResponse,
             "chapterReview": chapterResponse,
              "role" : "assistant"}, 200
