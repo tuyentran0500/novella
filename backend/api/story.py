@@ -126,15 +126,13 @@ def getContentBlock(data):
 def chapterWriting():
     data = request.get_json()
     print("Print Data:", data)
-    summary = getStoryProgress(data['index'])
-    content = "Based on the summary of the previous chapter as: " + summary + "."
-    content += "Write an chapter based on the following description: "
+    summary = getStoryProgress(int(data['index']))
+    content = "Write a chapter continue the story based on the following description: "
     content += data['description']
     content += ". With this title:" + data['title']
-
     messages = [
         {"role": "system", "content": "Imagine that you are a master novel writer"},
-        # {"role": "assistant", "content": summary},
+        {"role": "assistant", "content": summary},
         {"role": "user", "content": content}
     ]
     print(messages)
@@ -251,10 +249,13 @@ def create_cover_image():
 def getReviewStory():
     data = request.get_json()
     chat = NovellaGPT()
-    summaryResponse = chat.predict_with_kg("Please analyze the cohesion of the story I've written. Check for repetitiveness between these chapters, ensuring that there is no redundant information or duplicated events, logical flow, and coherence between sentences and paragraphs. Ensure that the plot progresses smoothly and the events are connected logically. Pay attention to the consistency in character descriptions and actions. Look out for any inconsistencies or gaps in the storyline. Additionally, assess the overall readability and engagement factor of the narrative. Provide feedback on how well the story holds together and suggest improvements where necessary. Additionally, please provide an overall score for the story, considering its coherence, flow, character development, and engagement. ")
-    chapterResponse = chat.predict("Please review the chapter: " + str(data['title']) + " by considering the writing style, cohension, and engaging.")
+    summaryResponse = chat.predict("Please analyze the cohesion of the story I've written. Check for repetitiveness between these chapters, ensuring that there is no redundant information or duplicated events, logical flow, and coherence between sentences and paragraphs. Ensure that the plot progresses smoothly and the events are connected logically. Pay attention to the consistency in character descriptions and actions. Look out for any inconsistencies or gaps in the storyline. Additionally, assess the overall readability and engagement factor of the narrative. Provide feedback on how well the story holds together and suggest improvements where necessary. Additionally, please provide an overall score for the story, considering its coherence, flow, character development, and engagement. (within 400 characters)")
+    # summaryResponse = chat.predict_with_large_text()
+    chapterResponse = chat.predict_with_kg("Please review the chapter: " + str(data['title']) + ". Pay attention to how the narrative progresses, how well different elements are connected, the level of engagement it creates, and the language and style used by the author. Your review should offer detailed insights into the strengths and areas for improvement in these aspects. (within 400 character)", int(data['index']))
+    print(summaryResponse)
+    print(chapterResponse)
     # summaryResponse = "Hello"
-    # chapterResponse = "Welcome"
+    # chapterResponse = "In general this chapter was well-design, has good flows of paces."
     return {"summaryReview": summaryResponse,
             "chapterReview": chapterResponse,
              "role" : "assistant"}, 200

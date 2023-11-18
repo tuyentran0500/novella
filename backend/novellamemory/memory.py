@@ -3,8 +3,10 @@ from pydantic import BaseModel
 from typing import List, Dict, Any
 from pymongo import MongoClient
 from langchain.memory import ConversationKGMemory
+import os
+client = MongoClient(os.getenv('DATABASE_URL'))
 
-client = MongoClient('mongodb://localhost:27017/')
+
 db = client['novella']
 storyCollection = db['story']
 class NovellaStoryMemory(BaseMemory, BaseModel):
@@ -27,7 +29,7 @@ class NovellaStoryMemory(BaseMemory, BaseModel):
         # Get the story input
         doc = storyCollection.find_one({})['chapters']
         # Extract known information about chapters, if they exist.
-        chapters = [item.get('content', '') for item in doc]
+        chapters = [item.get('description', '') for item in doc]
         # Return combined information about chapters to put into context.
         return {self.memory_key: "\n".join(chapters)}
     def save_context(self, inputs: Dict[str, Any], outputs: Dict[str, str]) -> None:
