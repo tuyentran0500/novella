@@ -12,6 +12,7 @@ import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
 import ModeEditOutlinedIcon from '@mui/icons-material/ModeEditOutlined';
 import LightbulbOutlinedIcon from '@mui/icons-material/LightbulbOutlined';
 import { useChatContext } from "@/context/Chat";
+import ChapterWritingNavbar from "./ChapterWritingNavbar";
 const ChapterWritingEditor = (): JSX.Element => {
     const { selectedChapter, storyOutlineList} = useStoryContext();
     return (
@@ -47,37 +48,10 @@ const ChapterWriting = (): JSX.Element => {
     if (isEditing) return <EditChapterWriting onEdit={onEdit} editor={editor}/>
     return (
         <Card className="m-5 w-full flex flex-col overflow-y-auto h-full">
-            <CardMedia
-                sx={{ height: 240 }}
-                image="https://images.unsplash.com/photo-1519791883288-dc8bd696e667?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80"
-                title="green iguana"
-            />
-            <CardActions className="flex flex-row-reverse">
-                <Tooltip title="Review">
-                    <IconButton>
-                        <ContentPasteSearchIcon />
-                    </IconButton>
-                </Tooltip>
-                <Tooltip title="Save">
-                    <IconButton onClick={saveCurrentChapterContent} >
-                        <SaveOutlinedIcon/>
-                    </IconButton>
-                </Tooltip>
-                <Tooltip title="Edit">
-                    <IconButton onClick={onEdit}>
-                        <ModeEditOutlinedIcon/>
-                    </IconButton>
-                </Tooltip>
-                <Tooltip title="Brainstorm" onClick={showBrainstormChat}>
-                    <IconButton>
-                        <LightbulbOutlinedIcon/>
-                    </IconButton>
-                </Tooltip>
-            </CardActions>
+            <ChapterWritingNavbar onEdit={onEdit} />
             <div className="pb-8">
                 <BlockNoteView editor={editor}/>
             </div>
-
         </Card>
     )
 }

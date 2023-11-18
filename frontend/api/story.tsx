@@ -2,7 +2,7 @@ import axios from "axios"
 import { BRAINSTORMING_API, BRAINSTORMING_CONFIRM_API, IMPROVE_API, OUTLINE_API, REVIEW_API, SAVE_CHAPTER_API, WRITING_API } from "./endpoints"
 import {  ChatResponse } from "./models/chat"
 import { CreateChapterResponse, ImproveChapterResponse, OutlineStoryResponse, ReviewChapterResponse } from "./models/story";
-import { ChapterContent } from "@/interfaces/Story";
+import { ChapterContent, ReviewContent } from "@/interfaces/Story";
 import { getintialContent } from "@/helper/editor";
 
 export const getBrainstormResponse = async (data : ChatResponse): Promise<ChatResponse | null> => {
@@ -82,9 +82,9 @@ export const saveChapterContent = async (data: ChapterContent): Promise<CreateCh
 }
 
 // review story
-export const reviewStory = async (): Promise<ReviewChapterResponse | null> => {
+export const reviewStory = async (data : ChapterContent): Promise<ReviewChapterResponse | null> => {
   try {
-    const result = await axios<CreateChapterResponse>(REVIEW_API)
+    const result = await axios.post<ReviewContent>(REVIEW_API, data)
     if (result.status === 200){
       return result.data
     }
