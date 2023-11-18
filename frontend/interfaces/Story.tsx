@@ -33,3 +33,8 @@ export interface OutlinePrompt {
     content: ChapterContent[],
     role: 'user' | 'assistant' | 'system',
 }
+
+export interface ReviewContent {
+    summaryReview: string,
+    chapterReview: string,
+}
