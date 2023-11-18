@@ -60,8 +60,8 @@ const EditChapterWriting = ({onEdit, editor} : EditChapterWritngProps): JSX.Elem
                     <Tab value={0} label="Chapter Review"/>
                     <Tab value={1} label="Story Review"/>
                 </Tabs>
-                {reviewTab == 0 && <div>{reviewContent?.chapterReview}</div>}
-                {reviewTab == 1 && <div>{reviewContent?.summaryReview}</div>}
+                {reviewTab == 1 && <div>{reviewContent?.chapterReview}</div>}
+                {reviewTab == 0 && <div>{reviewContent?.summaryReview}</div>}
 
             </Box>
         </Modal>
