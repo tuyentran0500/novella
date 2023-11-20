@@ -82,7 +82,7 @@ def getOutline():
 def getStoryProgress(chapterIndex):
     chapters = storyCollection.find_one({})['chapters']
     summary = ""
-    for index in range(0, chapterIndex):
+    for index in range(len(chapters)):
         summary += chapters[index]['description']
     return summary
 def getContentBlock(data):
