@@ -6,7 +6,7 @@ services:
       dockerfile: Dockerfile
     image: tuyentran0500/novella-ui:latest
     environment:
-      BACKEND_API: ${BACKEND_API}
+      BE_URL: ${BE_URL}
     ports:
       - 3000:3000
     container_name: novella-ui
