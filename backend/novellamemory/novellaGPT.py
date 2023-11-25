@@ -22,7 +22,7 @@ class NovellaGPT():
     conversation_with_kg: ConversationChain
     # chain: NovellaSummarizationChain
     def __init__(self):
-        self.llm = ChatOpenAI(temperature=0, openai_api_key=os.getenv('NOVELLA_API_KEY'))
+        self.llm = ChatOpenAI(temperature=0, openai_api_key=os.getenv('OPEN_API_KEY'))
 
         self.template = """THis is a following story information of a writer.
 
@@ -38,7 +38,7 @@ class NovellaGPT():
         )
 
         ## Use of knowledge graph.
-        llm = ChatOpenAI(temperature=0, openai_api_key=os.getenv('NOVELLA_API_KEY'))
+        llm = ChatOpenAI(temperature=0, openai_api_key=os.getenv('OPEN_API_KEY'))
         memory = ConversationEntityMemory(llm=self.llm)
 
         self.conversation_with_kg = ConversationChain(

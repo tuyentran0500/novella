@@ -4,14 +4,15 @@ import openai
 from pymongo import MongoClient
 from novellamemory.novellaGPT import NovellaGPT
 import os
+from openai import OpenAI
 
 chat_bp = Blueprint('chat', __name__)
 
 client = MongoClient(os.getenv('DATABASE_URL'))
+clientAI = OpenAI(api_key=os.getenv('NOVELLA_API_KEY'), base_url=os.getenv('NOVELLA_API_BASE'))
 db = client['novella']
 
-openai.api_key = os.getenv('NOVELLA_API_KEY')
-openai.api_base = os.getenv('NOVELLA_API_BASE')
+
 
 def getBrainstormHistoryById(id = ""):
     chatCollection = db['chat']
@@ -36,7 +37,7 @@ def getChapterHistoryById(id = ""):
 def summaryBrainstorm(messages, request = "Summary the story so far with title, detail story progress, divide the story into 4 acts.", ):
     # summary the story so far
     new_messages = messages + [{"content": request, "role" : "user"}]
-    summaryResponse = openai.ChatCompletion.create(
+    summaryResponse = clientAI.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=new_messages,
     )
@@ -54,7 +55,7 @@ def getBrainstormResponse():
     data = request.get_json()
     content = data['content']
     messages.append({"role": "user", "content": content})
-    response = openai.ChatCompletion.create(
+    response = clientAI.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=messages
         )
@@ -62,7 +63,7 @@ def getBrainstormResponse():
     db['chat'].update_one({}, { "$set": { "brainstorm.memory": messages } })
     # Add suggestion list
     messages.append({"content": "Suggest the next brainstorming step in less than 40 characters", "role" : "user"})
-    suggestionResponse = openai.ChatCompletion.create(
+    suggestionResponse = clientAI.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=messages,
         n=4
@@ -86,7 +87,7 @@ def getChapterBrainstormResponse():
 
     content = data['content']
     messages.append({"role": "user", "content": content})
-    response = openai.ChatCompletion.create(
+    response = clientAI.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=messages
         )
@@ -98,7 +99,7 @@ def getChapterBrainstormResponse():
 
     # Add suggestion list
     messages.append({"content": "Suggest the next brainstorming step for this chapter in less than 40 characters", "role" : "user"})
-    suggestionResponse = openai.ChatCompletion.create(
+    suggestionResponse = clientAI.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=messages,
         n=4

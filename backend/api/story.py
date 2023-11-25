@@ -1,15 +1,16 @@
 from flask import Blueprint,request
 import os
 from novellamemory.novellaGPT import NovellaGPT
-import openai
 from pymongo import MongoClient
 import json
 import requests
 import base64
-openai.api_key = os.getenv('NOVELLA_API_KEY')
-openai.api_base = os.getenv('NOVELLA_API_BASE')
+from openai import OpenAI
+
 story_bp = Blueprint('story', __name__)
 client = MongoClient(os.getenv('DATABASE_URL'))
+clientAI = OpenAI(api_key=os.getenv('NOVELLA_API_KEY'), base_url=os.getenv('NOVELLA_API_BASE'))
+
 db = client['novella']
 storyCollection = db['story']
 
@@ -24,7 +25,7 @@ def brainstorming():
     content = data['content']
     content = ", ".join(content)
     content = "Suggest me a story idea with the following genres " + content
-    response = openai.ChatCompletion.create(
+    response = clientAI.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
             {"role" : "system", "content" : "You are an helpful assistant"},
@@ -65,7 +66,7 @@ def getOutlineStoryList(summary):
     content = "With the following idea:" + summary + "\n"
     content += "Suggest an outline chapters in the following format: ``` [ { \"title\" : \"\", \"description\": \"\", \"index\": number}]``` with index start from 0."
     messages = [{"role": "user", "content": content}]
-    response = openai.ChatCompletion.create(
+    response = clientAI.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=messages
     )
@@ -126,18 +127,22 @@ def getContentBlock(data):
 def chapterWriting():
     data = request.get_json()
     print("Print Data:", data)
+    storySummary = storyCollection.find_one({})['summary']
     summary = getStoryProgress(int(data['index']))
     content = "Write a chapter continue the story based on the following description: "
     content += data['description']
     content += ". With this title:" + data['title']
     messages = [
         {"role": "system", "content": "Imagine that you are a master novel writer"},
+        {"role": "assistant", "content": storySummary},
         {"role": "assistant", "content": summary},
         {"role": "user", "content": content}
     ]
     print(messages)
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
+    clientAPI = OpenAI(api_key=os.getenv("OPEN_API_KEY"))
+
+    response = clientAPI.chat.completions.create(
+        model="ft:gpt-3.5-turbo-1106:personal::8Mx3v9oF",
         messages=messages
     )
     data["content"] = response.choices[0].message.content
@@ -160,7 +165,7 @@ def improveSelectedText():
         {"role": "user", "content": content}
     ]
     print(messages)
-    response = openai.ChatCompletion.create(
+    response = clientAI.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=messages
     )
@@ -172,7 +177,7 @@ def rewriteChapterDescription(data):
     content = data['content']
     content = "Rewrite this chapter description based on the content: " + content + "."
     content += "Also, write this within 3 setences and do not include the chapter title" 
-    response = openai.ChatCompletion.create(
+    response = clientAI.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
             {"role" : "system", "content" : "You are an helpful assistant"},
