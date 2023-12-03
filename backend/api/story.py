@@ -64,7 +64,7 @@ def confirmBrainstormIdea():
 
 def getOutlineStoryList(summary):
     content = "With the following idea:" + summary + "\n"
-    content += "Suggest an outline chapters in the following format: ``` [ { \"title\" : \"\", \"description\": \"\", \"index\": number}]``` with index start from 0."
+    content += "Suggest an outline chapters in the following format: ``` [ { \"title\" : \"\", \"description\": \"\", \"index\": number}]``` with index start from 0, a detailed description for each chapter, encompassing a comprehensive account of the narrative progression from the preceding chapter, providing insights into the current chapter's setting and events, and concluding in a manner that seamlessly leads into the subsequent chapter. If applicable, emphasize the interconnectivity between chapters to maintain a cohesive flow in the overall story."
     messages = [{"role": "user", "content": content}]
     response = clientAI.chat.completions.create(
         model="gpt-3.5-turbo",
@@ -130,10 +130,10 @@ def chapterWriting():
     storySummary = storyCollection.find_one({})['summary']
     summary = getStoryProgress(int(data['index']))
     content = "Write a chapter continue the story based on the following description: "
-    content += data['description']
+    content += storyCollection.find_one({})['chapters'][data['index']]['description']
     content += ". With this title:" + data['title']
     messages = [
-        {"role": "system", "content": "Imagine that you are a master novel writer"},
+        {"role": "system", "content": "You are a master novel writer"},
         {"role": "assistant", "content": storySummary},
         {"role": "assistant", "content": summary},
         {"role": "user", "content": content}
@@ -142,7 +142,7 @@ def chapterWriting():
     clientAPI = OpenAI(api_key=os.getenv("OPEN_API_KEY"))
 
     response = clientAPI.chat.completions.create(
-        model="ft:gpt-3.5-turbo-1106:personal::8Mx3v9oF",
+        model="ft:gpt-3.5-turbo-1106:personal::8RaLVHaW",
         messages=messages
     )
     data["content"] = response.choices[0].message.content
@@ -254,7 +254,7 @@ def create_cover_image():
 def getReviewStory():
     data = request.get_json()
     chat = NovellaGPT()
-    summaryResponse = chat.predict("Please analyze the cohesion of the story I've written. Check for repetitiveness between these chapters, ensuring that there is no redundant information or duplicated events, logical flow, and coherence between sentences and paragraphs. Ensure that the plot progresses smoothly and the events are connected logically. Pay attention to the consistency in character descriptions and actions. Look out for any inconsistencies or gaps in the storyline. Additionally, assess the overall readability and engagement factor of the narrative. Provide feedback on how well the story holds together and suggest improvements where necessary. Additionally, please provide an overall score for the story, considering its coherence, flow, character development, and engagement. (within 400 characters)")
+    summaryResponse = chat.predict("Please analyze the cohesion of the story I've written. Check for repetitiveness between these chapters, ensuring that there is no redundant information or duplicated events, logical flow, and coherence between sentences and paragraphs. Ensure that the plot progresses smoothly and the events are connected logically. Pay attention to the consistency in character descriptions and actions. Look out for any inconsistencies or gaps in the storyline. Additionally, assess the overall readability and engagement factor of the narrative. Provide feedback on how well the story holds together and suggest improvements where necessary. Additionally, please provide an overall score for the story, considering its coherence, flow, character development, and engagement. (within 1000 characters)")
     # summaryResponse = chat.predict_with_large_text()
     chapterResponse = chat.predict_with_kg("Please review the chapter: " + str(data['title']) + ". Pay attention to how the narrative progresses, how well different elements are connected, the level of engagement it creates, and the language and style used by the author. Your review should offer detailed insights into the strengths and areas for improvement in these aspects. (within 400 character)", int(data['index']))
     print(summaryResponse)

@@ -57,7 +57,7 @@ def getBrainstormResponse():
     messages.append({"role": "user", "content": content})
     response = clientAI.chat.completions.create(
         model="gpt-3.5-turbo",
-        messages=messages
+        messages=messages[-10:]
         )
     messages.append({"content": response.choices[0].message.content, "role" : "assistant"})
     db['chat'].update_one({}, { "$set": { "brainstorm.memory": messages } })
@@ -65,12 +65,12 @@ def getBrainstormResponse():
     messages.append({"content": "Suggest the next brainstorming step in less than 40 characters", "role" : "user"})
     suggestionResponse = clientAI.chat.completions.create(
         model="gpt-3.5-turbo",
-        messages=messages,
+        messages=messages[-10:],
         n=4
     )
     suggestionList = [suggestionResponse.choices[i].message.content for i in range(4)]
     # Summary the story so far and save to db.
-    summaryResponse = summaryBrainstorm(messages)
+    summaryResponse = summaryBrainstorm(messages[-10:])
     db['chat'].update_one({}, { "$set": { "brainstorm.summary": summaryResponse.choices[0].message.content } })
 
     return {"content": response.choices[0].message.content, "role" : "assistant", "suggestionList" : suggestionList}, 200
