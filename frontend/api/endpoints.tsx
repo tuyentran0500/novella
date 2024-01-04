@@ -1,4 +1,6 @@
-export const BASE_API = "http://127.0.0.1:5000/"
+// export const BASE_API = process.env.BE_URL ?? "https://api-novella.azurewebsites.net/"
+export const BASE_API = process.env.BE_URL ?? "http://127.0.0.1:5000/"
+
 export const CHAT_BRAINSTORM_API = BASE_API + "chat"
 export const CHAT_CHAPTER_BRAINSTORM_API = CHAT_BRAINSTORM_API + "/chapter"
 

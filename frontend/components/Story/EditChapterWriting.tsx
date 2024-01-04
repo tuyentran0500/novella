@@ -54,11 +54,11 @@ const EditChapterWriting = ({onEdit, editor} : EditChapterWritngProps): JSX.Elem
             open={showReview}
             onClose={() => setshowReview(false)}
         >
-            <Box className="bg-white p-4 rounded-xl max-w-md">
+            <Box className="bg-white p-4 rounded-xl max-w-lg">
                 <div className="font-bold mb-2 text-lg">Reviews</div>
                 <Tabs value = {reviewTab} onChange={handleChange}>
-                    <Tab value={0} label="Chapter Review"/>
-                    <Tab value={1} label="Story Review"/>
+                    <Tab value={0} label="Story Review"/>
+                    <Tab value={1} label="Chapter Review"/>
                 </Tabs>
                 {reviewTab == 1 && <div>{reviewContent?.chapterReview}</div>}
                 {reviewTab == 0 && <div>{reviewContent?.summaryReview}</div>}
