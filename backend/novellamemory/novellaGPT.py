@@ -20,7 +20,7 @@ class NovellaGPT():
     template: PromptTemplate
     conversation: ConversationChain
     conversation_with_kg: ConversationChain
-    # chain: NovellaSummarizationChain
+    chain: NovellaSummarizationChain
     def __init__(self):
         self.llm = ChatOpenAI(temperature=0, openai_api_key=os.getenv('OPEN_API_KEY'))
 
@@ -44,7 +44,7 @@ class NovellaGPT():
         self.conversation_with_kg = ConversationChain(
             llm=llm, prompt=ENTITY_MEMORY_CONVERSATION_TEMPLATE, verbose=True, memory=memory
         )
-        # self.chain = NovellaSummarizationChain()
+        self.chain = NovellaSummarizationChain()
 
     def predict(self, input: str):
         return self.conversation.predict(input = input)
@@ -55,8 +55,8 @@ class NovellaGPT():
                 self.conversation_with_kg.  memory.save_context({"input" : item.get('title', '')}, {"output" : item.get('description', '')})
         self.conversation_with_kg.memory.save_context({"input" : doc[index].get('title', '')}, {"output" : doc[index].get('content', '')})
         return self.conversation_with_kg.predict(input = input)
-    # def predict_with_large_text(self):
-    #     return self.chain.run()
+    def predict_with_large_text(self):
+        return self.chain.run()
 if __name__ == '__main__':
     gpt = NovellaGPT()
     result = gpt.predict("Could you cite all of chapter 1 content?")
