@@ -69,6 +69,7 @@ export const StoryProvider: React.FC<StoryProviderProps> = ({children}) => {
     const changeCurrentChapter = async (title: string) => {
         setFetchSelectedChapterStatus('loading');
         const data = storyOutlineList.filter(chapter => chapter.title == title)[0];
+        console.log("Change chapter", storyOutlineList, data)
         setSelectedChapter(data);
         setFetchSelectedChapterStatus('succeeded');
     }
@@ -97,6 +98,7 @@ export const StoryProvider: React.FC<StoryProviderProps> = ({children}) => {
         const result = await getStoryOutline();
         if (result != null){
             setFetchChatContentStatus('succeeded');
+            console.log("Outline", result.content)
             setStoryOutlineList(result.content);
         }
         else {

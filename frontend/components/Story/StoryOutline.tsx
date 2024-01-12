@@ -9,8 +9,8 @@ const StoryOutline = (): JSX.Element => {
     return (
     <div className="m-2 flex flex-col overflow-y-auto h-screen">
             {storyOutlineList.map((story : ChapterContent, key) => {
-                if (!showChat) return <ChapterOutlineCard key= {key} title = {story.title} description={story.description} content={story.content} index={story.index} contentBlock = {story.contentBlock}/>
-                return <ChapterOutlineCardMini key= {key} title = {story.title} description={story.description} content={story.content} index={story.index} contentBlock = {story.contentBlock}/>
+                if (!showChat) return <ChapterOutlineCard key= {key} title = {story.title} description={story.description} content={story.content} index={story.index} contentBlock = {story.contentBlock} url = {story.url}/>
+                return <ChapterOutlineCardMini key= {key} title = {story.title} description={story.description} content={story.content} index={story.index} contentBlock = {story.contentBlock} url = {story.url}/>
             })}
         </div>
     )

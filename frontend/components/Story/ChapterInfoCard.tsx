@@ -4,17 +4,17 @@ import React, { useState } from "react";
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import ModeEditOutlineOutlinedIcon from '@mui/icons-material/ModeEditOutlineOutlined';
 import { IconButton } from "@mui/material";
-const ChapterInfoCard = ({title, description} : ChapterContent): JSX.Element => {
+const ChapterInfoCard = ({title, description, url} : ChapterContent): JSX.Element => {
     const [hover, setHover] = useState(false)
     return (
         <div className="flex bg-neutral-100 p-4 drop-shadow-2xl shadow-2xl hover:shadow-blue-500"
             onMouseEnter={() => setHover(true)}
             onMouseLeave={() => setHover(false)}
         >
-            <Image width = {100} height={100} src="/avatar.jpg" alt = "avatar" className="pt-4 mr-4"/>
+            <Image width = {200} height={200} src={url} alt = "avatar" className="pt-4 mr-4"/>
             <div className="flex flex-col text-center grow">
-                <p className="font-bold">{title}</p>
-                <p className="text-center">{description}</p>
+                <p className="font-bold text-xl">{title}</p>
+                <p className="text-center pt-2">{description}</p>
                 {hover && <div className="flex flex-row-reverse">
 
                     <IconButton>

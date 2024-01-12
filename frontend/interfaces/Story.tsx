@@ -4,6 +4,7 @@ export interface ChapterContent {
     index?: number,
     content?: string,
     contentBlock?: string,
+    url: string,
 }
 
 export interface ChapterContentBlock {
@@ -19,6 +20,7 @@ export const defaultChapterContent: ChapterContent = {
     description: '',
     index: -1,
     content: '',
+    url: '',
 }
 
 

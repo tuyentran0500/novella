@@ -40,6 +40,14 @@ def confirmBrainstormIdea():
     data = request.get_json()
     content = data['content']
     outlineList = getOutlineStoryList(summary=content)
+    outlineList = [{
+        "description": chapter["description"],
+        "title": chapter["title"],
+        "url" : create_cover_image_dall_e(prompt=chapter['description'], summaryRequired=True)[0]['url'],
+        "index": i,
+        "content": "",
+        "contentBlock": ""
+    } for i, chapter in enumerate(outlineList)]
     storyCollection.update_one({}, {
         "$set": {
             "summary" : content,
@@ -54,7 +62,8 @@ def confirmBrainstormIdea():
                     {"role": "system", "content": "You are brainstorming for a chapter with a summary: " + chapter['description']}
                 ],
                 "summary": chapter["description"],
-                "title": chapter["title"]
+                "title": chapter["title"],
+                "url" : chapter['url']
             } for chapter in outlineList]
         }
     })
@@ -129,7 +138,7 @@ def chapterWriting():
     print("Print Data:", data)
     storySummary = storyCollection.find_one({})['summary']
     summary = getStoryProgress(int(data['index']))
-    content = "Write a chapter continue the story based on the following description: "
+    content = "Write a chapter using the provided descriptions, insert additional dialogue between sections as necessary, incorporate engaging cliffhangers strategically, and add detailed descriptions of the surroundings and character reactions to enhance the narrative: "
     content += storyCollection.find_one({})['chapters'][data['index']]['description']
     content += ". With this title:" + data['title']
     messages = [
@@ -252,11 +261,27 @@ def create_cover_image():
 
 
 @story_bp.route('/generate-image-v2', methods=['POST'])
-def create_cover_image_dall_e():
-    clientAI = OpenAI(api_key=os.getenv('NOVELLA_API_KEY'), base_url=os.getenv('NOVELLA_API_BASE'))
-    response = clientAI.images.generate(
+def create_cover_image_dall_e(prompt: str = "", summaryRequired: bool = False):
+    if prompt == "":
+        data = request.get_json()
+        prompt = data['prompt']
+    if summaryRequired == True:
+        storySummary = storyCollection.find_one({})['summary']
+        messages=[
+            {"role" : "system", "content" : "You are an helpful assistant"},
+            {"role" : "assistant", "content" : storySummary},
+            {"role": "user", "content": "Generate a text prompt that instructs DALL-E to draw a cover for the chapter of the story, based on the summary of the chapter as: " + prompt}
+        ]
+        response = clientAI.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=messages
+        )
+        prompt = response.choices[0].message.content
+        print(prompt)
+    clientDrawAI = OpenAI(api_key=os.getenv('OPEN_API_KEY'))
+    response = clientDrawAI.images.generate(
     model="dall-e-3",
-    prompt="a white siamese cat",
+    prompt=prompt,
     size="1024x1024",
     quality="standard",
     n=1,
