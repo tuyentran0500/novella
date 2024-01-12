@@ -1,16 +1,16 @@
 from flask import Blueprint,request
 import os
 from novellamemory.novellaGPT import NovellaGPT
-import openai
 from pymongo import MongoClient
 import json
 import requests
 import base64
+from openai import OpenAI
 
-openai.api_key = os.getenv('NOVELLA_API_KEY')
-openai.api_base = os.getenv('NOVELLA_API_BASE')
 story_bp = Blueprint('story', __name__)
-client = MongoClient('mongodb://localhost:27017/')
+client = MongoClient(os.getenv('DATABASE_URL'))
+clientAI = OpenAI(api_key=os.getenv('NOVELLA_API_KEY'), base_url=os.getenv('NOVELLA_API_BASE'))
+
 db = client['novella']
 storyCollection = db['story']
 
@@ -25,7 +25,7 @@ def brainstorming():
     content = data['content']
     content = ", ".join(content)
     content = "Suggest me a story idea with the following genres " + content
-    response = openai.ChatCompletion.create(
+    response = clientAI.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
             {"role" : "system", "content" : "You are an helpful assistant"},
@@ -40,6 +40,14 @@ def confirmBrainstormIdea():
     data = request.get_json()
     content = data['content']
     outlineList = getOutlineStoryList(summary=content)
+    outlineList = [{
+        "description": chapter["description"],
+        "title": chapter["title"],
+        "url" : create_cover_image_dall_e(prompt=chapter['description'], summaryRequired=True)[0]['url'],
+        "index": i,
+        "content": "",
+        "contentBlock": ""
+    } for i, chapter in enumerate(outlineList)]
     storyCollection.update_one({}, {
         "$set": {
             "summary" : content,
@@ -54,7 +62,8 @@ def confirmBrainstormIdea():
                     {"role": "system", "content": "You are brainstorming for a chapter with a summary: " + chapter['description']}
                 ],
                 "summary": chapter["description"],
-                "title": chapter["title"]
+                "title": chapter["title"],
+                "url" : chapter['url']
             } for chapter in outlineList]
         }
     })
@@ -64,9 +73,9 @@ def confirmBrainstormIdea():
 
 def getOutlineStoryList(summary):
     content = "With the following idea:" + summary + "\n"
-    content += "Suggest an outline chapters in the following format: ``` [ { \"title\" : \"\", \"description\": \"\", \"index\": number}]``` with index start from 0."
+    content += "Suggest an outline chapters in the following format: ``` [ { \"title\" : \"\", \"description\": \"\", \"index\": number}]``` with index start from 0, a detailed description for each chapter, encompassing a comprehensive account of the narrative progression from the preceding chapter, providing insights into the current chapter's setting and events, and concluding in a manner that seamlessly leads into the subsequent chapter. If applicable, emphasize the interconnectivity between chapters to maintain a cohesive flow in the overall story."
     messages = [{"role": "user", "content": content}]
-    response = openai.ChatCompletion.create(
+    response = clientAI.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=messages
     )
@@ -83,7 +92,7 @@ def getOutline():
 def getStoryProgress(chapterIndex):
     chapters = storyCollection.find_one({})['chapters']
     summary = ""
-    for index in range(0, chapterIndex):
+    for index in range(len(chapters)):
         summary += chapters[index]['description']
     return summary
 def getContentBlock(data):
@@ -127,18 +136,22 @@ def getContentBlock(data):
 def chapterWriting():
     data = request.get_json()
     print("Print Data:", data)
+    storySummary = storyCollection.find_one({})['summary']
     summary = getStoryProgress(int(data['index']))
-    content = "Write a chapter continue the story based on the following description: "
-    content += data['description']
+    content = "Write a chapter using the provided descriptions, insert additional dialogue between sections as necessary, incorporate engaging cliffhangers strategically, and add detailed descriptions of the surroundings and character reactions to enhance the narrative: "
+    content += storyCollection.find_one({})['chapters'][data['index']]['description']
     content += ". With this title:" + data['title']
     messages = [
-        {"role": "system", "content": "Imagine that you are a master novel writer"},
+        {"role": "system", "content": "You are a master novel writer"},
+        {"role": "assistant", "content": storySummary},
         {"role": "assistant", "content": summary},
         {"role": "user", "content": content}
     ]
     print(messages)
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
+    clientAPI = OpenAI(api_key=os.getenv("OPEN_API_KEY"))
+
+    response = clientAPI.chat.completions.create(
+        model="ft:gpt-3.5-turbo-1106:personal::8RaLVHaW",
         messages=messages
     )
     data["content"] = response.choices[0].message.content
@@ -161,7 +174,7 @@ def improveSelectedText():
         {"role": "user", "content": content}
     ]
     print(messages)
-    response = openai.ChatCompletion.create(
+    response = clientAI.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=messages
     )
@@ -173,7 +186,7 @@ def rewriteChapterDescription(data):
     content = data['content']
     content = "Rewrite this chapter description based on the content: " + content + "."
     content += "Also, write this within 3 setences and do not include the chapter title" 
-    response = openai.ChatCompletion.create(
+    response = clientAI.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
             {"role" : "system", "content" : "You are an helpful assistant"},
@@ -246,13 +259,46 @@ def create_cover_image():
             f.write(base64.b64decode(image["base64"]))
     return {"content": "Success", "role" : "system"}, 200
 
+
+@story_bp.route('/generate-image-v2', methods=['POST'])
+def create_cover_image_dall_e(prompt: str = "", summaryRequired: bool = False):
+    if prompt == "":
+        data = request.get_json()
+        prompt = data['prompt']
+    if summaryRequired == True:
+        storySummary = storyCollection.find_one({})['summary']
+        messages=[
+            {"role" : "system", "content" : "You are an helpful assistant"},
+            {"role" : "assistant", "content" : storySummary},
+            {"role": "user", "content": "Generate a text prompt that instructs DALL-E to draw a cover for the chapter of the story, based on the summary of the chapter as: " + prompt}
+        ]
+        response = clientAI.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=messages
+        )
+        prompt = response.choices[0].message.content
+        print(prompt)
+    clientDrawAI = OpenAI(api_key=os.getenv('OPEN_API_KEY'))
+    response = clientDrawAI.images.generate(
+    model="dall-e-3",
+    prompt=prompt,
+    size="1024x1024",
+    quality="standard",
+    n=1,
+    )
+
+    image_url = response.data[0].url
+    return {"url" : image_url}, 200
+
 @story_bp.route("/review", methods=["POST"])
 def getReviewStory():
     data = request.get_json()
     chat = NovellaGPT()
-    summaryResponse = chat.predict("Please analyze the cohesion of the story I've written. Check for repetitiveness between these chapters, ensuring that there is no redundant information or duplicated events, logical flow, and coherence between sentences and paragraphs. Ensure that the plot progresses smoothly and the events are connected logically. Pay attention to the consistency in character descriptions and actions. Look out for any inconsistencies or gaps in the storyline. Additionally, assess the overall readability and engagement factor of the narrative. Provide feedback on how well the story holds together and suggest improvements where necessary. Additionally, please provide an overall score for the story, considering its coherence, flow, character development, and engagement. ")
-    # summaryResponse = chat.predict_with_large_text()
-    chapterResponse = chat.predict_with_kg("Please review the chapter: " + str(data['title']) + ". Pay attention to how the narrative progresses, how well different elements are connected, the level of engagement it creates, and the language and style used by the author. Your review should offer detailed insights into the strengths and areas for improvement in these aspects.", int(data['index']))
+    # summaryResponse = chat.predict("Please analyze the cohesion of the story I've written. Check for repetitiveness between these chapters, ensuring that there is no redundant information or duplicated events, logical flow, and coherence between sentences and paragraphs. Ensure that the plot progresses smoothly and the events are connected logically. Pay attention to the consistency in character descriptions and actions. Look out for any inconsistencies or gaps in the storyline. Additionally, assess the overall readability and engagement factor of the narrative. Provide feedback on how well the story holds together and suggest improvements where necessary. Additionally, please provide an overall score for the story, considering its coherence, flow, character development, and engagement. (within 1000 characters)")
+    summaryResponse = chat.predict_with_large_text()
+    chapterResponse = chat.predict_with_kg("Please review the chapter: " + str(data['title']) + ". Pay attention to how the narrative progresses, how well different elements are connected, the level of engagement it creates, and the language and style used by the author. Your review should offer detailed insights into the strengths and areas for improvement in these aspects. (within 400 character)", int(data['index']))
+    print(summaryResponse)
+    print(chapterResponse)
     # summaryResponse = "Hello"
     # chapterResponse = "In general this chapter was well-design, has good flows of paces."
     return {"summaryReview": summaryResponse,

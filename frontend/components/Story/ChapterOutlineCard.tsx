@@ -2,7 +2,7 @@ import { Button, Card, CardActions, CardContent, Typography } from "@mui/materia
 import React from "react";
 import { useStoryContext } from "@/context/Story";
 import { ChapterContent } from "@/interfaces/Story";
-const ChapterOutlineCard = ({title, description, index, content, contentBlock} : ChapterContent):JSX.Element => {
+const ChapterOutlineCard = ({title, description, index, content, contentBlock, url} : ChapterContent):JSX.Element => {
     const {handleWritingChapter} = useStoryContext();
     return (
         <div className="m-2 max-w-md">
@@ -16,7 +16,7 @@ const ChapterOutlineCard = ({title, description, index, content, contentBlock} :
                 </Typography>
                 </CardContent>
                 <CardActions>
-                <Button size="small" onClick={() => handleWritingChapter({title, description, index, content, contentBlock})}>Write</Button>
+                <Button size="small" onClick={() => handleWritingChapter({title, description, index, content, contentBlock, url})}>Write</Button>
                 <Button size="small">Edit</Button>
                 </CardActions>
 

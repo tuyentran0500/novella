@@ -8,7 +8,7 @@ const ChapterList = (): JSX.Element => {
             <div className="pb-12">
                 {
                     storyOutlineList.map((chapter, index) => (
-                        <ChapterInfoCard title={chapter.title} description={chapter.description || ''} key={index}/>
+                        <ChapterInfoCard title={chapter.title} description={chapter.description || ''} key={index} url={chapter.url}/>
                     ))
                 }
             </div>

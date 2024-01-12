@@ -13,7 +13,7 @@ interface ChapterWritingNavbarProps {
 const ChapterWritingNavbar = ({onReview, onEdit} : ChapterWritingNavbarProps): JSX.Element => {
     const {saveCurrentChapterContent, changeShowChat, selectedChapter} = useStoryContext();
     const { changePageView } = useChatContext(); 
-
+    console.log("Chapter", selectedChapter)
     const showBrainstormChat = () => {
         changeShowChat();
         changePageView(selectedChapter);
@@ -21,8 +21,11 @@ const ChapterWritingNavbar = ({onReview, onEdit} : ChapterWritingNavbarProps): J
     return (
         <>
             <CardMedia
-                sx={{ height: 240 }}
-                image="https://images.unsplash.com/photo-1519791883288-dc8bd696e667?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80"
+                sx={{ height: 500 }}
+                image={
+                    selectedChapter.url || 
+                    "https://images.unsplash.com/photo-1519791883288-dc8bd696e667?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80"
+                }
                 title="green iguana"
             />
             <CardActions className="flex flex-row-reverse">
